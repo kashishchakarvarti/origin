@@ -1,0 +1,63 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { getGreeting } from "@/lib/format";
+import { useCrestData } from "@/hooks/use-crest-data";
+import { useAuth } from "@/providers/auth-provider";
+import { KPICard } from "@/components/dashboard/kpi-card";
+import { IntelligenceCard } from "@/components/dashboard/intelligence-card";
+
+export default function DashboardPage() {
+  const { data, isLoading } = useCrestData();
+  const { name } = useAuth();
+  const stats = data?.dashboardStats;
+  const intelligence = data?.intelligence;
+
+  const kpis = stats
+    ? [
+        { label: "Businesses", value: stats.businesses, format: "number" as const },
+        { label: "Revenue", value: stats.revenue, format: "currency" as const },
+        { label: "Profit", value: stats.profit, format: "currency" as const },
+        { label: "Withdrawable", value: stats.withdrawable, format: "currency" as const },
+        { label: "Countries", value: stats.countries, format: "number" as const },
+        { label: "Orders", value: stats.orders, format: "number" as const },
+      ]
+    : [];
+
+  if (isLoading) {
+    return (
+      <div className="space-y-10 max-w-7xl animate-pulse">
+        <div className="space-y-2">
+          <div className="h-5 w-32 bg-white/[0.06] rounded" />
+          <div className="h-10 w-48 bg-white/[0.06] rounded" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-24 rounded-2xl bg-white/[0.04]" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-10 max-w-7xl">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-white/50 text-lg">{getGreeting()},</p>
+        <h1 className="text-4xl font-semibold tracking-tight mt-1">{name || "Kashish"}</h1>
+      </motion.div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {kpis.map((kpi, i) => (
+          <KPICard key={kpi.label} label={kpi.label} value={kpi.value} index={i} format={kpi.format} />
+        ))}
+      </div>
+
+      {intelligence && <IntelligenceCard insight={intelligence} />}
+    </div>
+  );
+}

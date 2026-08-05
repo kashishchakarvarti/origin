@@ -1,0 +1,127 @@
+"use client";
+
+import { useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { LaunchBusinessDialog } from "@/components/opportunities/launch-business-dialog";
+import { OpportunityCard } from "@/components/opportunities/opportunity-card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CATEGORIES, COUNTRIES } from "@/lib/constants";
+import { crestStore } from "@/lib/data/store";
+import { useOpportunities } from "@/hooks/use-crest-data";
+import { useToast } from "@/providers/toast-provider";
+import type { Opportunity } from "@/lib/types";
+
+export default function OpportunitiesPage() {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [country, setCountry] = useState("all");
+  const [launchTarget, setLaunchTarget] = useState<Opportunity | null>(null);
+  const { data: opportunities = [], isLoading } = useOpportunities({ category, country, search });
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const launchProducts = useMemo(
+    () => (launchTarget ? crestStore.getOpportunityProducts(launchTarget.id) : []),
+    [launchTarget]
+  );
+
+  const handleLaunchClick = (id: string) => {
+    const opp = crestStore.getOpportunity(id);
+    if (opp) setLaunchTarget(opp);
+  };
+
+  const handleConfirmLaunch = (selectedProductIds: string[]) => {
+    if (!launchTarget) return;
+    const business = crestStore.launchBusiness(launchTarget.id, selectedProductIds);
+    if (business) {
+      queryClient.invalidateQueries({ queryKey: ["crest"] });
+      toast({
+        title: "Business Launched",
+        description: `${business.name} is now live in ${business.country}.`,
+        variant: "success",
+      });
+      setLaunchTarget(null);
+      router.push(`/businesses/${business.id}`);
+    }
+  };
+
+  return (
+    <div className="space-y-8 max-w-7xl">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <h1 className="text-3xl font-semibold tracking-tight">Business Opportunities</h1>
+        <p className="text-white/50 mt-2">Curated global commerce businesses ready to launch</p>
+      </motion.div>
+
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+          <Input
+            placeholder="Search businesses..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="w-full sm:w-44">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={country} onValueChange={setCountry}>
+          <SelectTrigger className="w-full sm:w-44">
+            <SelectValue placeholder="Country" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Countries</SelectItem>
+            {COUNTRIES.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isLoading ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-96 rounded-2xl bg-white/[0.04] animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {opportunities.map((opp, i) => (
+            <OpportunityCard key={opp.id} opportunity={opp} index={i} onLaunch={handleLaunchClick} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && opportunities.length === 0 && (
+        <div className="text-center py-20 text-white/40">No opportunities match your filters.</div>
+      )}
+
+      <LaunchBusinessDialog
+        opportunity={launchTarget}
+        products={launchProducts}
+        open={!!launchTarget}
+        onOpenChange={(open) => !open && setLaunchTarget(null)}
+        onLaunch={handleConfirmLaunch}
+      />
+    </div>
+  );
+}
