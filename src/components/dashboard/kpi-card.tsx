@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { formatINR, formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { RollingNumber } from "@/components/ui/rolling-number";
 
 interface KPICardProps {
   label: string;
@@ -12,12 +12,7 @@ interface KPICardProps {
 }
 
 export function KPICard({ label, value, index, format = "number" }: KPICardProps) {
-  const displayValue =
-    typeof value === "number"
-      ? format === "currency"
-        ? formatINR(value)
-        : formatNumber(value)
-      : value;
+  const numeric = typeof value === "number" ? value : Number(value) || 0;
 
   return (
     <motion.div
@@ -29,7 +24,7 @@ export function KPICard({ label, value, index, format = "number" }: KPICardProps
       <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <p className="text-sm text-white/50 relative">{label}</p>
       <p className={cn("text-2xl font-semibold text-white mt-2 relative tracking-tight")}>
-        {displayValue}
+        <RollingNumber value={numeric} format={format} />
       </p>
     </motion.div>
   );

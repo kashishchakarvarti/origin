@@ -64,6 +64,7 @@ export const MISSION_STEP_KEYS: Record<(typeof MISSION_STEPS)[number], string> =
 export const NAV_ITEMS = [
   { href: "/dashboard", labelKey: "nav.dashboard", icon: "LayoutDashboard" },
   { href: "/opportunities", labelKey: "nav.opportunities", icon: "Sparkles" },
+  { href: "/festivals", labelKey: "nav.festivals", icon: "CalendarDays" },
   { href: "/businesses", labelKey: "nav.businesses", icon: "Building2" },
   { href: "/mission-control", labelKey: "nav.mission", icon: "Rocket" },
   { href: "/payments", labelKey: "nav.payments", icon: "Wallet" },
@@ -148,11 +149,11 @@ export const INTELLIGENCE_INSIGHTS = [
 ];
 
 export const AI_RESPONSES: Record<string, string> = {
-  canada: "Canada shows solid demand for Home and Pet. E-commerce growth is about 23% YoY, with CREST logistics supporting cross-border fulfillment. Home businesses in Toronto or Vancouver typically score 85+ on launch readiness. Minimum launch cost starts at ₹1,00,000 with projected monthly orders around 1,200.",
-  recommend: "Based on your portfolio, SmartGlow™ in Beauty for UAE is a strong fit. Your Home businesses share customer overlap, and Beauty currently rates about 91% confidence with roughly 2,400 projected monthly orders.",
-  category: "Your top category is Home at ₹18,42,000 across 4 businesses. Pet follows at ₹12,08,000. Home in the USA and Canada remains strong; Beauty in UAE is a useful diversification.",
-  products: "For SmartSleep™, consider the Premium Pillow Set and Organic Diffuser. Both score 92+ and share about 68% customer affinity with your current lineup. Combined launch cost: ₹2,40,000.",
-  default: "I've reviewed your portfolio across 7 countries. Your withdrawable balance of ₹6,82,000 can fund up to 2 new launches. Home and Beauty show the strongest returns this quarter. Ask about a specific country for details.",
+  canada: "Canada shows steady demand for Home and Pet. E-commerce growth is about 23% YoY, with CREST logistics supporting cross-border fulfillment. Home launches in Toronto or Vancouver typically score 85+ on readiness. Minimum launch cost starts near ₹85,000 with projected monthly orders around 180–250.",
+  recommend: "Based on your portfolio, a Beauty brand in UAE is a strong next step. It overlaps with your Home customers and currently rates about 91% confidence with roughly 220–280 projected monthly orders.",
+  category: "Your top category is Home at about ₹1.8L across your live brands. Pet follows. Home in the USA and Canada remains solid; Beauty in UAE is a useful diversification at this stage.",
+  products: "For your next launch, consider a Premium Pillow Set and Organic Diffuser. Both score 92+ and share strong affinity with your current lineup. Combined launch cost is around ₹95,000–1.2L.",
+  default: "I've reviewed your early-stage portfolio. With roughly ₹5L in revenue and a modest withdrawable balance, you can fund one careful new launch. Home and Beauty show the steadiest returns this quarter — ask about a specific country for details.",
 };
 
 export const NOTIFICATION_TEMPLATES = [

@@ -12,6 +12,7 @@ import {
   SPECIALIST_FIRST,
   SPECIALIST_LAST,
 } from "../constants";
+import { buildFestivalOpportunities, buildFestivalProducts } from "../festival-opportunities";
 import { AVATAR_IMAGE, getCategoryImage } from "../images";
 import type { AudienceTargeting } from "../audience-filters";
 import type {
@@ -150,15 +151,18 @@ function generateMissionSteps(completedCount: number): UserBusiness["missionStep
 
 export function generateUserBusinesses(count: number, products: Product[]): UserBusiness[] {
   const businesses: UserBusiness[] = [];
-  for (let i = 0; i < count; i++) {
+  // Early-stage portfolio: keep totals near ~₹5L revenue across a handful of brands
+  const n = Math.min(count, 5);
+  for (let i = 0; i < n; i++) {
     const rand = seededRandom(i * 2341 + 500);
     const category = CATEGORIES[i % CATEGORIES.length];
     const country = COUNTRIES[i % COUNTRIES.length];
     const categoryProducts = products.filter((p) => p.category === category);
-    const productIds = categoryProducts.slice(0, range(2, 5, rand)).map((p) => p.id);
-    const revenue = range(180000, 9800000, rand);
-    const profit = Math.floor(revenue * (rand() * 0.25 + 0.08));
-    const orders = range(120, 8400, rand);
+    const productIds = categoryProducts.slice(0, range(2, 4, rand)).map((p) => p.id);
+    // Uneven mix so one brand leads — still sums ~₹4.5–5.5L
+    const revenue = range(55000, 145000, rand);
+    const profit = Math.floor(revenue * (0.16 + rand() * 0.07));
+    const orders = range(32, 110, rand);
     const completedSteps = range(5, 8, rand);
     businesses.push({
       id: `biz_${i + 1}`,
@@ -169,16 +173,16 @@ export function generateUserBusinesses(count: number, products: Product[]): User
       revenue,
       profit,
       orders,
-      inventory: range(45, 2400, rand),
-      withdrawable: Math.floor(profit * (rand() * 0.4 + 0.5)),
-      currentSellingPrice: range(1999, 7999, rand) / 100,
-      launchScore: range(82, 97, rand),
-      crestPrice: range(80000, 300000, rand),
+      inventory: range(24, 140, rand),
+      withdrawable: Math.floor(profit * (0.55 + rand() * 0.2)),
+      currentSellingPrice: range(1899, 4999, rand) / 100,
+      launchScore: range(82, 96, rand),
+      crestPrice: range(45000, 120000, rand),
       image: getCategoryImage(category, `biz_${i + 1}`),
       commerceSpecialist: generateSpecialist(i + 10),
       missionSteps: generateMissionSteps(completedSteps),
       productIds,
-      createdAt: new Date(Date.now() - range(30, 365, rand) * 86400000).toISOString(),
+      createdAt: new Date(Date.now() - range(21, 150, rand) * 86400000).toISOString(),
     });
   }
   return businesses;
@@ -204,10 +208,10 @@ export function generateOrders(count: number, businesses: UserBusiness[]): Order
       customerName: `${first} ${last}`,
       customerEmail: `${local}@${pick(domains, rand)}`,
       customerPhone: `+${countryCode}${phoneBody}`,
-      amount: range(1500, 45000, rand),
+      amount: range(799, 2899, rand),
       status: pick(["completed", "processing", "shipped"] as const, rand),
       country: business.country,
-      createdAt: new Date(Date.now() - range(0, 180, rand) * 86400000).toISOString(),
+      createdAt: new Date(Date.now() - range(0, 90, rand) * 86400000).toISOString(),
     });
   }
   return orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -223,7 +227,7 @@ export function generateTransactions(count: number, businesses: UserBusiness[]):
     transactions.push({
       id: `txn_${i + 1}`,
       type,
-      amount: range(5000, 500000, rand),
+      amount: range(1200, 28000, rand),
       status: pick(["completed", "pending", "failed"] as const, rand),
       description:
         type === "withdrawal"
@@ -251,8 +255,8 @@ export function generateCustomers(count: number): Customer[] {
       name: `${pick(firstNames, rand)} ${pick(lastNames, rand)}`,
       email: `customer${i + 1}@email.com`,
       country: pick(COUNTRIES, rand),
-      totalOrders: range(1, 45, rand),
-      totalSpent: range(2000, 180000, rand),
+      totalOrders: range(1, 18, rand),
+      totalSpent: range(900, 28000, rand),
     });
   }
   return customers;
@@ -268,7 +272,7 @@ export function generateNotifications(count: number, businesses: UserBusiness[])
     const countUnits = String(range(50, 500, rand));
     const price = `$${business.currentSellingPrice.toFixed(2)}`;
     const step = pick(MISSION_STEPS, rand);
-    const amount = `₹${range(1, 50, rand)},${range(10, 99, rand)},000`;
+    const amount = `₹${range(48, 95, rand)},000`;
     const vars: Record<string, string> = {
       name: business.name,
       country: business.country,
@@ -402,14 +406,18 @@ export function generateReviews(
 }
 
 export function generateSeedData(): AppData {
-  const products = generateProducts(500);
-  const opportunities = generateOpportunities(100, products);
-  const userBusinesses = generateUserBusinesses(12, products);
+  const baseProducts = generateProducts(500);
+  const festivalProducts = buildFestivalProducts();
+  const products = [...festivalProducts, ...baseProducts];
+  const festivalOpps = buildFestivalOpportunities();
+  const baseOpps = generateOpportunities(100, baseProducts);
+  const opportunities = [...festivalOpps, ...baseOpps];
+  const userBusinesses = generateUserBusinesses(5, products);
   // Keep stored payload small — stats reflect full scale via business aggregates
-  const orders = generateOrders(500, userBusinesses);
-  const transactions = generateTransactions(200, userBusinesses);
-  const customers = generateCustomers(200);
-  const notifications = generateNotifications(100, userBusinesses);
+  const orders = generateOrders(72, userBusinesses);
+  const transactions = generateTransactions(36, userBusinesses);
+  const customers = generateCustomers(48);
+  const notifications = generateNotifications(28, userBusinesses);
   const reviews = generateReviews(products, opportunities);
 
   return {

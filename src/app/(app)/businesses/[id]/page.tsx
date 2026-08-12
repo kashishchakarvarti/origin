@@ -14,6 +14,7 @@ import { TranslatedStatus } from "@/components/ui/translated-status";
 import { MissionTimeline } from "@/components/mission-control/mission-timeline";
 import { ReviewsPanel } from "@/components/reviews/reviews-panel";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
+import { RollingNumber } from "@/components/ui/rolling-number";
 import { maskEmail, maskPhone } from "@/lib/mask";
 import { estimateAudienceReach, isAiDecidedTargeting, normalizeAudienceTargeting, resolveAudienceTargeting } from "@/lib/audience-filters";
 import {
@@ -110,12 +111,12 @@ export default function BusinessDetailPage() {
         <TabsContent value="overview">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-2">
             {[
-              { label: t("biz.revenue"), value: formatINR(business.revenue) },
-              { label: t("biz.profit"), value: formatINR(business.profit) },
-              { label: t("common.orders"), value: formatNumber(business.orders) },
-              { label: t("biz.inventory"), value: formatNumber(business.inventory) },
-              { label: t("biz.withdrawable"), value: formatINR(business.withdrawable) },
-              { label: t("biz.sellingPrice"), value: formatUSD(business.currentSellingPrice) },
+              { label: t("biz.revenue"), value: business.revenue, format: "currency" as const },
+              { label: t("biz.profit"), value: business.profit, format: "currency" as const },
+              { label: t("common.orders"), value: business.orders, format: "number" as const },
+              { label: t("biz.inventory"), value: business.inventory, format: "number" as const },
+              { label: t("biz.withdrawable"), value: business.withdrawable, format: "currency" as const },
+              { label: t("biz.sellingPrice"), value: business.currentSellingPrice, format: "usd" as const },
             ].map((stat) => (
               <motion.div
                 key={stat.label}
@@ -124,7 +125,9 @@ export default function BusinessDetailPage() {
                 className="rounded-xl border border-white/[0.06] bg-card p-4"
               >
                 <p className="text-xs text-white/40 uppercase tracking-wider">{stat.label}</p>
-                <p className="text-lg font-semibold mt-1">{stat.value}</p>
+                <p className="text-lg font-semibold mt-1">
+                  <RollingNumber value={stat.value} format={stat.format} />
+                </p>
               </motion.div>
             ))}
           </div>

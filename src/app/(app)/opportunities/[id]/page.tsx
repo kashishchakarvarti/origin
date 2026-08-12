@@ -14,6 +14,7 @@ import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { resolveOpportunityStatus } from "@/lib/crest-status";
 import { crestStore } from "@/lib/data/store";
+import { formatFestivalChip } from "@/lib/festival-label";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import { useLanguage } from "@/providers/language-provider";
 import { useOpportunity, useReviews } from "@/hooks/use-crest-data";
@@ -27,7 +28,7 @@ export default function OpportunityDetailPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { toast } = useToast();
-  const { t, tn } = useLanguage();
+  const { t, tn, language } = useLanguage();
   const status = opportunity ? resolveOpportunityStatus(opportunity) : null;
 
   const launchProducts = useMemo(
@@ -79,6 +80,11 @@ export default function OpportunityDetailPage() {
             {status && <StatusBadge status={status} onMedia />}
             <OnMediaChip variant="country">{tn(opportunity.country)}</OnMediaChip>
             <OnMediaChip variant="category">{tn(opportunity.category)}</OnMediaChip>
+            {opportunity.festivalName && opportunity.festivalDate && (
+              <OnMediaChip variant="neutral">
+                {formatFestivalChip(opportunity.festivalName, opportunity.festivalDate, t, language)}
+              </OnMediaChip>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-semibold on-media-text text-white drop-shadow-md">{tn(opportunity.name)}</h1>
         </div>

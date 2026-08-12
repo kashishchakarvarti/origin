@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import {
   Building2,
+  CalendarDays,
   Headphones,
   LayoutDashboard,
   Rocket,
@@ -20,6 +21,7 @@ import { useLanguage } from "@/providers/language-provider";
 const iconMap = {
   LayoutDashboard,
   Sparkles,
+  CalendarDays,
   Building2,
   Rocket,
   Wallet,

@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { resolveOpportunityStatus } from "@/lib/crest-status";
+import { formatFestivalChip } from "@/lib/festival-label";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import type { Opportunity } from "@/lib/types";
 import { useLanguage } from "@/providers/language-provider";
@@ -19,7 +20,7 @@ interface OpportunityCardProps {
 }
 
 export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCardProps) {
-  const { t, tn } = useLanguage();
+  const { t, tn, language } = useLanguage();
   const status = resolveOpportunityStatus(opportunity);
 
   return (
@@ -45,6 +46,11 @@ export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCar
             <StatusBadge status={status} onMedia />
             <OnMediaChip variant="country">{tn(opportunity.country)}</OnMediaChip>
             <OnMediaChip variant="category">{tn(opportunity.category)}</OnMediaChip>
+            {opportunity.festivalName && opportunity.festivalDate && (
+              <OnMediaChip variant="neutral">
+                {formatFestivalChip(opportunity.festivalName, opportunity.festivalDate, t, language)}
+              </OnMediaChip>
+            )}
           </div>
         </div>
       </Link>

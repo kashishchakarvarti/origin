@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { resolveOpportunityStatus } from "@/lib/crest-status";
+import { formatFestivalChip } from "@/lib/festival-label";
 import { formatNumber } from "@/lib/format";
 import type { Opportunity } from "@/lib/types";
 import { useLanguage } from "@/providers/language-provider";
@@ -28,7 +29,7 @@ interface LiveOpportunitiesProps {
 }
 
 export function LiveOpportunities({ opportunities }: LiveOpportunitiesProps) {
-  const { t, tn } = useLanguage();
+  const { t, tn, language } = useLanguage();
   const featured = useMemo(
     () =>
       [...opportunities]
@@ -140,6 +141,11 @@ export function LiveOpportunities({ opportunities }: LiveOpportunitiesProps) {
                   <div className="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5">
                     <StatusBadge status={status} onMedia />
                     <OnMediaChip variant="country">{tn(opp.country)}</OnMediaChip>
+                    {opp.festivalName && opp.festivalDate && (
+                      <OnMediaChip variant="neutral">
+                        {formatFestivalChip(opp.festivalName, opp.festivalDate, t, language)}
+                      </OnMediaChip>
+                    )}
                   </div>
                   <div className="absolute bottom-3 left-3 right-3 min-w-0">
                     <p className="font-semibold on-media-text text-white drop-shadow-md truncate">{tn(opp.name)}</p>

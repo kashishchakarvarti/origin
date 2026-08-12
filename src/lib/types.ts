@@ -51,6 +51,10 @@ export interface Opportunity {
   productIds: string[];
   commerceSpecialist: string;
   includedServices: string[];
+  /** Optional festival commerce window */
+  festivalName?: string;
+  /** ISO date YYYY-MM-DD */
+  festivalDate?: string;
 }
 
 export interface UserBusiness {

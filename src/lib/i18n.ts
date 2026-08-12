@@ -27,6 +27,7 @@ type Dict = Record<string, string>;
 const enUI: Dict = {
   "nav.dashboard": "Dashboard",
   "nav.opportunities": "Business Opportunities",
+  "nav.festivals": "Festive Opportunities",
   "nav.businesses": "My Businesses",
   "nav.mission": "Mission Control",
   "nav.payments": "Payments",
@@ -305,6 +306,7 @@ const enUI: Dict = {
 const hiUI: Dict = {
   "nav.dashboard": "डैशबोर्ड",
   "nav.opportunities": "व्यापार अवसर",
+  "nav.festivals": "त्योहारी अवसर",
   "nav.businesses": "मेरे व्यवसाय",
   "nav.mission": "मिशन कंट्रोल",
   "nav.payments": "भुगतान",
@@ -555,6 +557,7 @@ const hiUI: Dict = {
 const esUI: Dict = {
   "nav.dashboard": "Panel",
   "nav.opportunities": "Oportunidades de negocio",
+  "nav.festivals": "Oportunidades festivas",
   "nav.businesses": "Mis negocios",
   "nav.mission": "Centro de misión",
   "nav.payments": "Pagos",
@@ -805,6 +808,7 @@ const esUI: Dict = {
 const frUI: Dict = {
   "nav.dashboard": "Tableau de bord",
   "nav.opportunities": "Opportunités business",
+  "nav.festivals": "Opportunités festives",
   "nav.businesses": "Mes entreprises",
   "nav.mission": "Centre de mission",
   "nav.payments": "Paiements",
@@ -1055,6 +1059,7 @@ const frUI: Dict = {
 const arUI: Dict = {
   "nav.dashboard": "لوحة التحكم",
   "nav.opportunities": "فرص الأعمال",
+  "nav.festivals": "فرص احتفالية",
   "nav.businesses": "أعمالي",
   "nav.mission": "مركز المهام",
   "nav.payments": "المدفوعات",
@@ -1305,6 +1310,7 @@ const arUI: Dict = {
 const deUI: Dict = {
   "nav.dashboard": "Dashboard",
   "nav.opportunities": "Geschäftschancen",
+  "nav.festivals": "Festliche Chancen",
   "nav.businesses": "Meine Unternehmen",
   "nav.mission": "Missionszentrale",
   "nav.payments": "Zahlungen",

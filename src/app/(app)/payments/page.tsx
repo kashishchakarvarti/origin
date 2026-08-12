@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { TranslatedStatus } from "@/components/ui/translated-status";
 import { crestStore } from "@/lib/data/store";
 import { formatINR } from "@/lib/format";
+import { RollingNumber } from "@/components/ui/rolling-number";
 import {
   translateTransactionDescription,
   translateTransactionType,
@@ -93,7 +94,7 @@ export default function PaymentsPage() {
           >
             <p className="text-sm text-white/50">{stat.label}</p>
             <p className={`text-2xl font-semibold mt-2 ${stat.highlight ? "text-gold" : "text-white"}`}>
-              {formatINR(stat.value)}
+              <RollingNumber value={stat.value} format="currency" />
             </p>
           </motion.div>
         ))}

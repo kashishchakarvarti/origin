@@ -5,8 +5,10 @@ import type { AudienceTargeting } from "../audience-filters";
 import { normalizeAudienceTargeting } from "../audience-filters";
 import { DEMO_CREDENTIALS } from "../constants";
 import { createBusinessFromOpportunity, createCustomBusiness, generateSeedData } from "./generator";
+import { applyOrderSimulation, applyLiveOrderTick } from "./algo";
+import type { OrderAlgoOptions } from "./algo";
 
-const STORAGE_KEY = "crest_os_data_v9";
+const STORAGE_KEY = "crest_os_data_v11";
 const AUTH_KEY = "crest_os_auth";
 const DEMO_KEY = "crest_os_demo";
 
@@ -93,8 +95,20 @@ export const crestStore = {
     }
   },
 
-  getOpportunities(filters?: { category?: string; country?: string; search?: string }): Opportunity[] {
+  getOpportunities(filters?: {
+    category?: string;
+    country?: string;
+    search?: string;
+    /** only = festival commerce windows; exclude = non-festival; all = both */
+    festival?: "only" | "exclude" | "all";
+  }): Opportunity[] {
     let opps = loadData().opportunities;
+    const festivalMode = filters?.festival ?? "all";
+    if (festivalMode === "only") {
+      opps = opps.filter((o) => Boolean(o.festivalName && o.festivalDate) || o.id.startsWith("fest_"));
+    } else if (festivalMode === "exclude") {
+      opps = opps.filter((o) => !(o.festivalName && o.festivalDate) && !o.id.startsWith("fest_"));
+    }
     if (filters?.category && filters.category !== "all") {
       opps = opps.filter((o) => o.category === filters.category);
     }
@@ -107,7 +121,8 @@ export const crestStore = {
         (o) =>
           o.name.toLowerCase().includes(q) ||
           o.category.toLowerCase().includes(q) ||
-          o.country.toLowerCase().includes(q)
+          o.country.toLowerCase().includes(q) ||
+          (o.festivalName?.toLowerCase().includes(q) ?? false)
       );
     }
     return opps;
@@ -304,14 +319,43 @@ export const crestStore = {
     saveData(data);
   },
 
+  /**
+   * Run the fake-order algorithm for every user business.
+   * Volume is shaped by weekday/weekend, holidays, season, category, status, score, and age.
+   */
+  runOrderAlgo(options: OrderAlgoOptions = {}) {
+    const data = loadData();
+    const { created, result } = applyOrderSimulation(data, {
+      days: options.days ?? 14,
+      seed: options.seed ?? Date.now() % 1_000_000,
+      maxOrdersPerBusinessPerDay: options.maxOrdersPerBusinessPerDay ?? 6,
+    });
+    saveData(data);
+    return { created, summary: result?.summary ?? null };
+  },
+
+  /**
+   * Live tick — assign new orders now and bump revenue / profit / withdrawable / KPIs.
+   * Intended to run on a 10-second interval.
+   */
+  tickOrderAlgo(options: { intensity?: number } = {}) {
+    const data = loadData();
+    const { created, revenue } = applyLiveOrderTick(data, {
+      seed: Date.now() % 1_000_000,
+      intensity: options.intensity ?? 0.035,
+    });
+    saveData(data);
+    return { created, revenue, stats: data.dashboardStats };
+  },
+
   simulateDemoTick() {
     const data = loadData();
     const growthFactor = 1 + Math.random() * 0.02;
     data.userBusinesses.forEach((b) => {
-      b.orders += Math.floor(Math.random() * 5) + 1;
-      b.revenue += Math.floor(Math.random() * 8000) + 2000;
-      b.profit += Math.floor(Math.random() * 2000) + 500;
-      b.withdrawable += Math.floor(Math.random() * 1500) + 300;
+      b.orders += Math.floor(Math.random() * 2); // 0–1
+      b.revenue += Math.floor(Math.random() * 1800) + 400;
+      b.profit += Math.floor(Math.random() * 350) + 80;
+      b.withdrawable += Math.floor(Math.random() * 220) + 50;
       if (Math.random() > 0.7) {
         const stepIndex = b.missionSteps.findIndex((s) => !s.completed);
         if (stepIndex >= 0) {

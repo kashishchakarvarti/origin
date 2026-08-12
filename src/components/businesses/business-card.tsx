@@ -7,9 +7,9 @@ import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { TranslatedStatus } from "@/components/ui/translated-status";
-import { formatINR, formatNumber } from "@/lib/format";
 import type { UserBusiness } from "@/lib/types";
 import { useLanguage } from "@/providers/language-provider";
+import { RollingNumber } from "@/components/ui/rolling-number";
 
 const STATUS_VARIANT = {
   live: "live",
@@ -51,11 +51,11 @@ export function BusinessCard({ business, index }: { business: UserBusiness; inde
       <div className="p-6 space-y-4">
         <h3 className="text-lg font-semibold text-white">{tn(business.name)}</h3>
         <div className="grid grid-cols-2 gap-3">
-          <Stat label={t("biz.revenue")} value={formatINR(business.revenue)} />
-          <Stat label={t("biz.profit")} value={formatINR(business.profit)} />
-          <Stat label={t("common.orders")} value={formatNumber(business.orders)} />
-          <Stat label={t("biz.inventory")} value={formatNumber(business.inventory)} />
-          <Stat label={t("biz.withdrawable")} value={formatINR(business.withdrawable)} colSpan />
+          <Stat label={t("biz.revenue")} value={business.revenue} format="currency" />
+          <Stat label={t("biz.profit")} value={business.profit} format="currency" />
+          <Stat label={t("common.orders")} value={business.orders} />
+          <Stat label={t("biz.inventory")} value={business.inventory} />
+          <Stat label={t("biz.withdrawable")} value={business.withdrawable} format="currency" colSpan />
         </div>
         <Link href={`/businesses/${business.id}`}>
           <Button variant="secondary" className="w-full group/btn">
@@ -68,11 +68,23 @@ export function BusinessCard({ business, index }: { business: UserBusiness; inde
   );
 }
 
-function Stat({ label, value, colSpan }: { label: string; value: string; colSpan?: boolean }) {
+function Stat({
+  label,
+  value,
+  format = "number",
+  colSpan,
+}: {
+  label: string;
+  value: number;
+  format?: "currency" | "number";
+  colSpan?: boolean;
+}) {
   return (
     <div className={colSpan ? "col-span-2" : ""}>
       <p className="text-[11px] text-white/40 uppercase tracking-wider">{label}</p>
-      <p className="text-sm font-medium text-white/90 mt-0.5">{value}</p>
+      <p className="text-sm font-medium text-white/90 mt-0.5">
+        <RollingNumber value={value} format={format} />
+      </p>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { CalendarDays, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { LaunchBusinessDialog } from "@/components/opportunities/launch-business-dialog";
@@ -17,26 +17,28 @@ import {
 } from "@/components/ui/select";
 import { CATEGORIES, COUNTRIES } from "@/lib/constants";
 import { crestStore } from "@/lib/data/store";
-import { useOpportunities } from "@/hooks/use-crest-data";
+import { sortByFestivalDate } from "@/lib/festival-opportunities";
+import { useFestivalOpportunities } from "@/hooks/use-crest-data";
 import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 import type { Opportunity } from "@/lib/types";
 
-export default function OpportunitiesPage() {
+export default function FestivalsPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [country, setCountry] = useState("all");
   const [launchTarget, setLaunchTarget] = useState<Opportunity | null>(null);
-  const { data: opportunities = [], isLoading } = useOpportunities({
+  const { data: festivalOpps = [], isLoading } = useFestivalOpportunities({
     category,
     country,
     search,
-    festival: "exclude",
   });
   const queryClient = useQueryClient();
   const router = useRouter();
   const { toast } = useToast();
   const { t, tn } = useLanguage();
+
+  const opportunities = useMemo(() => sortByFestivalDate(festivalOpps), [festivalOpps]);
 
   const launchProducts = useMemo(
     () => (launchTarget ? crestStore.getOpportunityProducts(launchTarget.id) : []),
@@ -65,16 +67,20 @@ export default function OpportunitiesPage() {
 
   return (
     <div className="space-y-8 max-w-7xl">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-semibold tracking-tight">{t("opp.title")}</h1>
-        <p className="text-white/50 mt-2">{t("opp.subtitle")}</p>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
+        <div className="flex items-center gap-2 text-gold">
+          <CalendarDays className="h-5 w-5" />
+          <p className="text-xs font-semibold tracking-widest uppercase">{t("fest.label")}</p>
+        </div>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("fest.title")}</h1>
+        <p className="text-white/50 mt-1 max-w-2xl">{t("fest.subtitle")}</p>
       </motion.div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
           <Input
-            placeholder={t("opp.search")}
+            placeholder={t("fest.search")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -87,7 +93,9 @@ export default function OpportunitiesPage() {
           <SelectContent>
             <SelectItem value="all">{t("common.all")}</SelectItem>
             {CATEGORIES.map((c) => (
-              <SelectItem key={c} value={c}>{tn(c)}</SelectItem>
+              <SelectItem key={c} value={c}>
+                {tn(c)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -98,7 +106,9 @@ export default function OpportunitiesPage() {
           <SelectContent>
             <SelectItem value="all">{t("common.all")}</SelectItem>
             {COUNTRIES.map((c) => (
-              <SelectItem key={c} value={c}>{tn(c)}</SelectItem>
+              <SelectItem key={c} value={c}>
+                {tn(c)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -119,7 +129,7 @@ export default function OpportunitiesPage() {
       )}
 
       {!isLoading && opportunities.length === 0 && (
-        <div className="text-center py-20 text-white/40">{t("opp.noResults")}</div>
+        <div className="text-center py-20 text-white/40">{t("fest.noResults")}</div>
       )}
 
       <LaunchBusinessDialog
