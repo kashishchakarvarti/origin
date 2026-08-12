@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String  @id
+  email       String  @unique
+  password    String
+  name        String
+  isOnboarded Boolean @default(false)
+  profile     Profile?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Profile {
+  id           String   @id
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  email        String
+  phone        String   @default("")
+  address      String   @default("")
+  avatar       String   @default("")
+  kycStatus    String   @default("not_started")
+  documents    Json     @default("[]")
+  settings     Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id            String   @id
+  name          String
+  category      String
+  crestPrice    Int
+  launchScore   Int
+  monthlyOrders Int
+  image         String
+  createdAt     DateTime @default(now())
+}
+
+model Opportunity {
+  id                      String   @id
+  name                    String
+  country                 String
+  category                String
+  launchScore             Int
+  crestPrice              Int
+  recommendedSellingPrice Float
+  monthlyOrders           Int
+  minimumLaunchCost       Int
+  availableCapacity       Int
+  peopleStarted           Int
+  status                  String?
+  image                   String
+  description             String
+  productsIncluded        Json
+  productIds              Json
+  commerceSpecialist      String
+  includedServices        Json
+  festivalName            String?
+  festivalDate            String?
+  createdAt               DateTime @default(now())
+}
+
+model UserBusiness {
+  id                  String   @id
+  name                String
+  country             String
+  category            String
+  status              String
+  revenue             Int      @default(0)
+  profit              Int      @default(0)
+  orders              Int      @default(0)
+  inventory           Int      @default(0)
+  withdrawable        Int      @default(0)
+  currentSellingPrice Float
+  launchScore         Int
+  crestPrice          Int
+  image               String
+  commerceSpecialist  String
+  missionSteps        Json
+  productIds          Json
+  audienceTargeting   Json?
+  createdAt           DateTime
+  updatedAt           DateTime @updatedAt
+}
+
+model Order {
+  id            String   @id
+  businessId    String
+  businessName  String
+  customerName  String
+  customerEmail String
+  customerPhone String
+  amount        Int
+  status        String
+  country       String
+  createdAt     DateTime
+}
+
+model Transaction {
+  id           String   @id
+  type         String
+  amount       Int
+  status       String
+  description  String
+  businessName String?
+  createdAt    DateTime
+}
+
+model Notification {
+  id         String   @id
+  title      String
+  message    String
+  titleKey   String?
+  messageKey String?
+  vars       Json?
+  type       String
+  read       Boolean  @default(false)
+  createdAt  DateTime
+}
+
+model Customer {
+  id          String @id
+  name        String
+  email       String
+  country     String
+  totalOrders Int
+  totalSpent  Int
+}
+
+model Review {
+  id            String   @id
+  productId     String?
+  opportunityId String?
+  authorName    String
+  authorType    String
+  rating        Int
+  title         String
+  comment       String
+  country       String
+  createdAt     DateTime
+  helpful       Int
+}
+
+model AppMeta {
+  id           Int      @id @default(1)
+  dashboard    Json
+  intelligence Json
+  updatedAt    DateTime @updatedAt
+}
