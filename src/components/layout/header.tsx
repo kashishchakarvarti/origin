@@ -6,6 +6,7 @@ import { Bell, Check, Globe, Moon, Search, Sun } from "lucide-react";
 import { useState } from "react";
 import { crestStore } from "@/lib/data/store";
 import { type LanguageCode } from "@/lib/i18n";
+import { translateNotification } from "@/lib/translate-notification";
 import { useNotifications } from "@/hooks/use-crest-data";
 import { useLanguage } from "@/providers/language-provider";
 import { useTheme } from "@/providers/theme-provider";
@@ -21,7 +22,7 @@ import {
 
 export function Header({ title }: { title?: string }) {
   const { data: notifications = [] } = useNotifications();
-  const { language, setLanguage, languages, t } = useLanguage();
+  const { language, setLanguage, languages, t, tn } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -121,7 +122,9 @@ export function Header({ title }: { title?: string }) {
                     </button>
                   </div>
                   <div className="max-h-96 overflow-y-auto">
-                    {notifications.slice(0, 20).map((notif) => (
+                    {notifications.slice(0, 20).map((notif) => {
+                      const localized = translateNotification(notif, t, tn);
+                      return (
                       <button
                         key={notif.id}
                         onClick={() => handleMarkRead(notif.id)}
@@ -133,15 +136,16 @@ export function Header({ title }: { title?: string }) {
                         <div className="flex items-start gap-2">
                           {!notif.read && <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" />}
                           <div className={cn(!notif.read ? "" : "ml-3.5")}>
-                            <p className="text-sm font-medium text-white">{notif.title}</p>
-                            <p className="text-xs text-white/50 mt-0.5">{notif.message}</p>
+                            <p className="text-sm font-medium text-white">{localized.title}</p>
+                            <p className="text-xs text-white/50 mt-0.5">{localized.message}</p>
                             <p className="text-[10px] text-white/30 mt-1">
                               {new Date(notif.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </motion.div>
               </>

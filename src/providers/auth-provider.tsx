@@ -14,6 +14,9 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+/** English fallback; login maps this to t("auth.invalidCreds") */
+export const AUTH_INVALID_CREDS = "Invalid email or password.";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState>({
     isAuthenticated: false,
@@ -32,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signIn(email.trim(), password);
     if (error || !data) {
-      throw new Error(error?.message ?? "Invalid email or password.");
+      throw new Error(error?.message ?? AUTH_INVALID_CREDS);
     }
     const authState = {
       isAuthenticated: true,

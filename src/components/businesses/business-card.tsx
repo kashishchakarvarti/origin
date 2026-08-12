@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OnMediaChip } from "@/components/ui/on-media-chip";
+import { TranslatedStatus } from "@/components/ui/translated-status";
 import { formatINR, formatNumber } from "@/lib/format";
 import type { UserBusiness } from "@/lib/types";
 import { useLanguage } from "@/providers/language-provider";
@@ -18,7 +19,6 @@ const STATUS_VARIANT = {
 
 export function BusinessCard({ business, index }: { business: UserBusiness; index: number }) {
   const { t, tn } = useLanguage();
-  const statusKey = `biz.status.${business.status}` as const;
   const statusVariant = STATUS_VARIANT[business.status] ?? "live";
 
   return (
@@ -26,7 +26,7 @@ export function BusinessCard({ business, index }: { business: UserBusiness; inde
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.5 }}
-      className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-card transition-all duration-500 hover:border-white/[0.12]"
+      className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-card crest-card-lift transition-all duration-500 hover:border-white/[0.12]"
     >
       <div className="relative h-40 overflow-hidden">
         <CrestImage
@@ -38,10 +38,10 @@ export function BusinessCard({ business, index }: { business: UserBusiness; inde
           className="object-cover transition-transform duration-700 group-hover:scale-105"
           sizes="400px"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-black/45" />
+        <div className="absolute inset-0 media-scrim" />
         <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center gap-2">
           <OnMediaChip variant={statusVariant} className="uppercase">
-            {t(statusKey)}
+            <TranslatedStatus kind="biz" status={business.status} />
           </OnMediaChip>
           <OnMediaChip variant="country">{tn(business.country)}</OnMediaChip>
           <OnMediaChip variant="category">{tn(business.category)}</OnMediaChip>

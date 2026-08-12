@@ -24,13 +24,13 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <DemoModeProvider>
-            <LanguageProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <DemoModeProvider>
               <ToastProvider>{children}</ToastProvider>
-            </LanguageProvider>
-          </DemoModeProvider>
-        </AuthProvider>
+            </DemoModeProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

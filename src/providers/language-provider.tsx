@@ -33,27 +33,39 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+function readStoredLanguage(): LanguageCode | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = crestStore.getData().profile?.settings?.language as LanguageCode | undefined;
+    if (stored && LANGUAGES.some((l) => l.code === stored)) return stored;
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<LanguageCode>("en");
+  const [language, setLanguageState] = useState<LanguageCode>(() => readStoredLanguage() ?? "en");
+  const [ready, setReady] = useState(false);
+
+  // SSR hydrates with "en"; re-sync from localStorage after mount so statuses/UI match saved language
+  useEffect(() => {
+    const stored = readStoredLanguage();
+    if (stored) setLanguageState(stored);
+    setReady(true);
+  }, []);
 
   useEffect(() => {
-    // Default language is always English unless user explicitly chose another
+    if (!ready) return;
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     try {
       const stored = crestStore.getData().profile?.settings?.language as LanguageCode | undefined;
-      const next =
-        stored && LANGUAGES.some((l) => l.code === stored) ? stored : ("en" as LanguageCode);
-      setLanguageState(next);
-      document.documentElement.lang = next;
-      document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
-      if (!stored) {
-        crestStore.updateSettings({ language: "en" });
-      }
+      if (!stored) crestStore.updateSettings({ language });
     } catch {
-      setLanguageState("en");
-      document.documentElement.lang = "en";
-      document.documentElement.dir = "ltr";
+      // ignore
     }
-  }, []);
+  }, [language, ready]);
 
   const setLanguage = useCallback((code: LanguageCode) => {
     setLanguageState(code);

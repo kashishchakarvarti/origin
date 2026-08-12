@@ -136,14 +136,14 @@ export function LiveOpportunities({ opportunities }: LiveOpportunitiesProps) {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="320px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-black/40" />
+                  <div className="absolute inset-0 media-scrim" />
                   <div className="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5">
                     <StatusBadge status={status} onMedia />
                     <OnMediaChip variant="country">{tn(opp.country)}</OnMediaChip>
                   </div>
                   <div className="absolute bottom-3 left-3 right-3 min-w-0">
-                    <p className="font-semibold text-white drop-shadow-md truncate">{tn(opp.name)}</p>
-                    <p className="text-xs text-white/80 mt-0.5 truncate">
+                    <p className="font-semibold on-media-text text-white drop-shadow-md truncate">{tn(opp.name)}</p>
+                    <p className="text-xs on-media-text-muted text-white/80 mt-0.5 truncate">
                       {tn(opp.country)} · {tn(opp.category)}
                     </p>
                   </div>

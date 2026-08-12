@@ -102,6 +102,10 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
+  /** i18n keys — preferred when present */
+  titleKey?: string;
+  messageKey?: string;
+  vars?: Record<string, string>;
   type: "success" | "info" | "warning" | "milestone";
   read: boolean;
   createdAt: string;

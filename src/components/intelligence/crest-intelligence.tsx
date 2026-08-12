@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, Send, Sparkles, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AI_RESPONSES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,26 +21,40 @@ const SUGGESTION_KEYS = [
   "intelligence.suggest.products",
 ] as const;
 
-function getAIResponse(input: string): string {
+function getAIResponseKey(input: string): string {
   const lower = input.toLowerCase();
-  if (lower.includes("canada") || lower.includes("कनाडा") || lower.includes("canadá")) {
-    return AI_RESPONSES.canada;
+  if (lower.includes("canada") || lower.includes("कनाडा") || lower.includes("canadá") || lower.includes("kanada")) {
+    return "intelligence.reply.canada";
   }
-  if (lower.includes("recommend") || lower.includes("suger") || lower.includes("empfehl")) {
-    return AI_RESPONSES.recommend;
+  if (
+    lower.includes("recommend") ||
+    lower.includes("suger") ||
+    lower.includes("empfehl") ||
+    lower.includes("सुझा") ||
+    lower.includes("اقترح")
+  ) {
+    return "intelligence.reply.recommend";
   }
   if (
     lower.includes("category") ||
     lower.includes("performing") ||
     lower.includes("catégorie") ||
-    lower.includes("categoría")
+    lower.includes("categoría") ||
+    lower.includes("श्रेणी") ||
+    lower.includes("فئة")
   ) {
-    return AI_RESPONSES.category;
+    return "intelligence.reply.category";
   }
-  if (lower.includes("product") || lower.includes("produit") || lower.includes("producto")) {
-    return AI_RESPONSES.products;
+  if (
+    lower.includes("product") ||
+    lower.includes("produit") ||
+    lower.includes("producto") ||
+    lower.includes("उत्पाद") ||
+    lower.includes("منتج")
+  ) {
+    return "intelligence.reply.products";
   }
-  return AI_RESPONSES.default;
+  return "intelligence.reply.default";
 }
 
 export function CrestIntelligence() {
@@ -67,7 +80,7 @@ export function CrestIntelligence() {
     setIsTyping(true);
 
     setTimeout(() => {
-      setMessages((prev) => [...prev, { role: "assistant", content: getAIResponse(text) }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: t(getAIResponseKey(text)) }]);
       setIsTyping(false);
     }, 1200);
   };

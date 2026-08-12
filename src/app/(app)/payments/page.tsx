@@ -14,25 +14,40 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { TranslatedStatus } from "@/components/ui/translated-status";
 import { crestStore } from "@/lib/data/store";
 import { formatINR } from "@/lib/format";
+import {
+  translateTransactionDescription,
+  translateTransactionType,
+} from "@/lib/translate-transaction";
 import { useCrestData, useTransactions } from "@/hooks/use-crest-data";
 import { useToast } from "@/providers/toast-provider";
 import { useLanguage } from "@/providers/language-provider";
 
+const DATE_LOCALES: Record<string, string> = {
+  en: "en-US",
+  hi: "hi-IN",
+  es: "es-ES",
+  fr: "fr-FR",
+  ar: "ar-AE",
+  de: "de-DE",
+};
+
 export default function PaymentsPage() {
-  const { t } = useLanguage();
+  const { t, tn, language } = useLanguage();
   const { data: appData } = useCrestData();
   const { data: transactions = [] } = useTransactions();
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [amount, setAmount] = useState("");
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const dateLocale = DATE_LOCALES[language] ?? "en-US";
 
   const stats = appData?.dashboardStats;
   const pending = transactions
-    .filter((t) => t.status === "pending")
-    .reduce((s, t) => s + t.amount, 0);
+    .filter((txn) => txn.status === "pending")
+    .reduce((s, txn) => s + txn.amount, 0);
   const lifetime = stats?.revenue ?? 0;
 
   const handleWithdraw = () => {
@@ -89,22 +104,36 @@ export default function PaymentsPage() {
         {t("pay.withdraw")}
       </Button>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-card overflow-hidden">
+      <div className="rounded-2xl border border-white/[0.06] bg-card overflow-hidden" key={language}>
         <div className="px-6 py-4 border-b border-white/[0.06]">
           <h2 className="font-semibold">{t("pay.transactions")}</h2>
         </div>
         {transactions.map((txn) => (
-          <div key={txn.id} className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04] last:border-0">
-            <div>
-              <p className="text-sm font-medium capitalize">{txn.type}</p>
-              <p className="text-xs text-white/40">{txn.description}</p>
-              <p className="text-[10px] text-white/30 mt-1">{new Date(txn.createdAt).toLocaleDateString()}</p>
-            </div>
-            <div className="text-right">
-              <p className={`text-sm font-medium ${txn.type === "withdrawal" ? "text-red-400" : "text-emerald-400"}`}>
-                {txn.type === "withdrawal" ? "−" : "+"}{formatINR(txn.amount)}
+          <div
+            key={txn.id}
+            className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/[0.04] last:border-0"
+          >
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{translateTransactionType(txn.type, t)}</p>
+              <p className="text-xs text-white/40 truncate">
+                {translateTransactionDescription(txn, t, tn)}
               </p>
-              <Badge variant="outline" className="mt-1">{txn.status}</Badge>
+              <p className="text-[10px] text-white/30 mt-1">
+                {new Date(txn.createdAt).toLocaleDateString(dateLocale)}
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <p
+                className={`text-sm font-medium ${
+                  txn.type === "withdrawal" ? "text-red-400" : "text-emerald-400"
+                }`}
+              >
+                {txn.type === "withdrawal" ? "−" : "+"}
+                {formatINR(txn.amount)}
+              </p>
+              <Badge variant="outline" className="mt-1">
+                <TranslatedStatus kind="pay" status={txn.status} />
+              </Badge>
             </div>
           </div>
         ))}

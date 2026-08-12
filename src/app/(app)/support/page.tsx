@@ -21,7 +21,7 @@ export default function SupportPage() {
   };
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent("Hi CREST Support, I need help with my business.");
+    const message = encodeURIComponent(t("support.whatsappPrefill"));
     window.open(`https://wa.me/${SUPPORT_WHATSAPP}?text=${message}`, "_blank", "noopener,noreferrer");
   };
 

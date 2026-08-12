@@ -73,14 +73,14 @@ export default function OpportunityDetailPage() {
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative h-72 md:h-96 rounded-2xl overflow-hidden">
         <CrestImage src={opportunity.image} category={opportunity.category} seed={opportunity.id} alt={tn(opportunity.name)} fill className="object-cover" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+        <div className="absolute inset-0 media-scrim--hero" />
         <div className="absolute bottom-6 left-6 right-6">
           <div className="flex flex-wrap gap-2 mb-3">
             {status && <StatusBadge status={status} onMedia />}
             <OnMediaChip variant="country">{tn(opportunity.country)}</OnMediaChip>
             <OnMediaChip variant="category">{tn(opportunity.category)}</OnMediaChip>
           </div>
-          <h1 className="text-3xl md:text-4xl font-semibold">{tn(opportunity.name)}</h1>
+          <h1 className="text-3xl md:text-4xl font-semibold on-media-text text-white drop-shadow-md">{tn(opportunity.name)}</h1>
         </div>
       </motion.div>
 

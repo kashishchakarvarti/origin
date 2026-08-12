@@ -21,9 +21,6 @@ import {
   type AudienceTargeting,
   type GoogleAdsTargeting,
   estimateAudienceReach,
-  formatAudienceReach,
-  formatFilterLabel,
-  FILTER_UI,
   GENDER_OPTIONS,
   GOOGLE_AFFINITY_OPTIONS,
   GOOGLE_BID_STRATEGY_OPTIONS,
@@ -42,7 +39,19 @@ import {
   resolveAudienceTargeting,
 } from "@/lib/audience-filters";
 import type { Category, Country } from "@/lib/types";
+import {
+  formatAudienceReachI18n,
+  translateAudienceLangLabel,
+  translateAudienceTag,
+  translateBidLabel,
+  translateGenderLabel,
+  translateIncomeLabel,
+  translateParentalLabel,
+  translatePlacementLabel,
+  translatePlatformLabel,
+} from "@/lib/translate-audience";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/providers/language-provider";
 
 interface AudienceFiltersPanelProps {
   country: Country | null;
@@ -57,6 +66,7 @@ export function AudienceFiltersPanel({
   targeting,
   onChange,
 }: AudienceFiltersPanelProps) {
+  const { t, tn } = useLanguage();
   const [activeTab, setActiveTab] = useState("audience");
   const [showFilters, setShowFilters] = useState(false);
   const aiDecided = isAiDecidedTargeting(targeting);
@@ -125,15 +135,15 @@ export function AudienceFiltersPanel({
             <SlidersHorizontal className="h-4 w-4 text-gold" />
           </div>
           <div>
-            <p className="text-sm font-semibold">{FILTER_UI.panelTitle}</p>
-            <p className="text-xs text-white/40">{FILTER_UI.panelSubtitle(country)}</p>
+            <p className="text-sm font-semibold">{t("audience.title")}</p>
+            <p className="text-xs text-white/40">{t("audience.market", { country: tn(country) })}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-gold/20 bg-gold/[0.06] px-3 py-2">
           <Users className="h-4 w-4 text-gold" />
           <div className="text-right">
-            <p className="text-[10px] text-white/40 uppercase tracking-wider">{FILTER_UI.estimatedReach}</p>
-            <p className="text-sm font-semibold text-gold">{formatAudienceReach(reach)}</p>
+            <p className="text-[10px] text-white/40 uppercase tracking-wider">{t("audience.estReach")}</p>
+            <p className="text-sm font-semibold text-gold">{formatAudienceReachI18n(reach, t)}</p>
           </div>
         </div>
       </div>
@@ -148,17 +158,17 @@ export function AudienceFiltersPanel({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Sparkles className="h-3.5 w-3.5 text-gold" />
-              <span className="text-sm font-medium">{FILTER_UI.aiCheckbox}</span>
+              <span className="text-sm font-medium">{t("audience.aiCheckbox")}</span>
             </div>
             <p className="text-xs text-white/40 leading-relaxed">
-              {FILTER_UI.aiDescription}
+              {t("audience.aiDescription")}
             </p>
           </div>
         </label>
 
         {aiDecided && (
           <div className="rounded-xl border border-gold/15 bg-gold/[0.04] px-4 py-3">
-            <p className="text-xs text-gold/90">{FILTER_UI.aiActive}</p>
+            <p className="text-xs text-gold/90">{t("audience.aiActive")}</p>
           </div>
         )}
 
@@ -167,6 +177,7 @@ export function AudienceFiltersPanel({
             <ButtonLikeToggle
               open={showFilters}
               onClick={() => setShowFilters((open) => !open)}
+              label={t("audience.advanced")}
             />
 
             <AnimatePresence initial={false}>
@@ -179,14 +190,14 @@ export function AudienceFiltersPanel({
                 >
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="pt-2">
                     <TabsList className="mb-6">
-                      <TabsTrigger value="audience">{FILTER_UI.tabs.audience}</TabsTrigger>
-                      <TabsTrigger value="google">{FILTER_UI.tabs.google}</TabsTrigger>
+                      <TabsTrigger value="audience">{t("audience.tab.profile")}</TabsTrigger>
+                      <TabsTrigger value="google">{t("audience.tab.channels")}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="audience" className="space-y-6 mt-0">
-                      <FilterSection title={FILTER_UI.sections.demographics}>
+                      <FilterSection title={t("audience.sec.demographics")}>
                         <div className="space-y-3">
-                          <Label className="text-xs text-white/50">{FILTER_UI.fieldLabels.ageRange}</Label>
+                          <Label className="text-xs text-white/50">{t("audience.field.age")}</Label>
                           <ChipRow>
                             {AGE_PRESETS.map((preset) => {
                               const active = targeting.ageMin === preset.min && targeting.ageMax === preset.max;
@@ -210,7 +221,7 @@ export function AudienceFiltersPanel({
                           </ChipRow>
                         </div>
                         <div className="space-y-2 mt-4">
-                          <Label className="text-xs text-white/50">{FILTER_UI.fieldLabels.gender}</Label>
+                          <Label className="text-xs text-white/50">{t("audience.field.gender")}</Label>
                           <ChipRow>
                             {GENDER_OPTIONS.map((opt) => (
                               <FilterChip
@@ -220,14 +231,14 @@ export function AudienceFiltersPanel({
                                   onChange({ ...targeting, gender: opt.value, aiDecided: false })
                                 }
                               >
-                                {opt.label}
+                                {translateGenderLabel(opt.value, t)}
                               </FilterChip>
                             ))}
                           </ChipRow>
                         </div>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.platforms}>
+                      <FilterSection title={t("audience.sec.platforms")}>
                         <ChipRow>
                           {PLATFORM_OPTIONS.map((opt) => (
                             <FilterChip
@@ -235,13 +246,13 @@ export function AudienceFiltersPanel({
                               active={targeting.platforms.includes(opt.value)}
                               onClick={() => togglePlatform(opt.value)}
                             >
-                              {opt.label}
+                              {translatePlatformLabel(opt.value, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.interests}>
+                      <FilterSection title={t("audience.sec.interests")}>
                         <ChipRow pill>
                           {INTEREST_OPTIONS.map((interest) => (
                             <FilterChip
@@ -250,13 +261,13 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleInterest(interest)}
                               pill
                             >
-                              {formatFilterLabel(interest)}
+                              {translateAudienceTag(interest, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.behaviors}>
+                      <FilterSection title={t("audience.sec.behaviors")}>
                         <ChipRow pill>
                           {BEHAVIOR_OPTIONS.map((behavior) => (
                             <FilterChip
@@ -265,7 +276,7 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleBehavior(behavior)}
                               pill
                             >
-                              {formatFilterLabel(behavior)}
+                              {translateAudienceTag(behavior, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
@@ -273,22 +284,28 @@ export function AudienceFiltersPanel({
 
                       <div className="grid sm:grid-cols-2 gap-4">
                         <SelectField
-                          label={FILTER_UI.sections.income}
+                          label={t("audience.sec.income")}
                           value={targeting.incomeLevel}
-                          options={INCOME_OPTIONS}
+                          options={INCOME_OPTIONS.map((o) => ({
+                            value: o.value,
+                            label: translateIncomeLabel(o.value, t),
+                          }))}
                           onChange={(v) => onChange({ ...targeting, incomeLevel: v, aiDecided: false })}
                         />
                         <SelectField
-                          label={FILTER_UI.sections.language}
+                          label={t("audience.sec.language")}
                           value={targeting.language}
-                          options={LANGUAGE_OPTIONS}
+                          options={LANGUAGE_OPTIONS.map((o) => ({
+                            value: o.value,
+                            label: translateAudienceLangLabel(o.value, t),
+                          }))}
                           onChange={(v) => onChange({ ...targeting, language: v, aiDecided: false })}
                         />
                       </div>
                     </TabsContent>
 
                     <TabsContent value="google" className="space-y-6 mt-0">
-                      <FilterSection title={FILTER_UI.sections.placements}>
+                      <FilterSection title={t("audience.sec.placements")}>
                         <ChipRow>
                           {GOOGLE_PLACEMENT_OPTIONS.map((opt) => (
                             <FilterChip
@@ -296,13 +313,13 @@ export function AudienceFiltersPanel({
                               active={google.placements.includes(opt.value)}
                               onClick={() => toggleList("placements", opt.value, true)}
                             >
-                              {opt.label}
+                              {translatePlacementLabel(opt.value, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.keywords}>
+                      <FilterSection title={t("audience.sec.keywords")}>
                         <ChipRow pill>
                           {GOOGLE_KEYWORD_OPTIONS.map((kw) => (
                             <FilterChip
@@ -311,13 +328,13 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleList("keywords", kw)}
                               pill
                             >
-                              {formatFilterLabel(kw)}
+                              {translateAudienceTag(kw, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.inMarket}>
+                      <FilterSection title={t("audience.sec.inMarket")}>
                         <ChipRow pill>
                           {GOOGLE_IN_MARKET_OPTIONS.map((item) => (
                             <FilterChip
@@ -326,13 +343,13 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleList("inMarket", item)}
                               pill
                             >
-                              {formatFilterLabel(item)}
+                              {translateAudienceTag(item, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.affinity}>
+                      <FilterSection title={t("audience.sec.affinity")}>
                         <ChipRow pill>
                           {GOOGLE_AFFINITY_OPTIONS.map((item) => (
                             <FilterChip
@@ -341,13 +358,13 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleList("affinity", item)}
                               pill
                             >
-                              {formatFilterLabel(item)}
+                              {translateAudienceTag(item, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.customIntent}>
+                      <FilterSection title={t("audience.sec.customIntent")}>
                         <ChipRow pill>
                           {GOOGLE_CUSTOM_INTENT_OPTIONS.map((item) => (
                             <FilterChip
@@ -356,13 +373,13 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleList("customIntent", item)}
                               pill
                             >
-                              {formatFilterLabel(item)}
+                              {translateAudienceTag(item, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.remarketing}>
+                      <FilterSection title={t("audience.sec.remarketing")}>
                         <ChipRow pill>
                           {GOOGLE_REMARKETING_OPTIONS.map((item) => (
                             <FilterChip
@@ -371,13 +388,13 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleList("remarketing", item)}
                               pill
                             >
-                              {formatFilterLabel(item)}
+                              {translateAudienceTag(item, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
                       </FilterSection>
 
-                      <FilterSection title={FILTER_UI.sections.lifeEvents}>
+                      <FilterSection title={t("audience.sec.lifeEvents")}>
                         <ChipRow pill>
                           {GOOGLE_LIFE_EVENT_OPTIONS.map((item) => (
                             <FilterChip
@@ -386,7 +403,7 @@ export function AudienceFiltersPanel({
                               onClick={() => toggleList("lifeEvents", item)}
                               pill
                             >
-                              {formatFilterLabel(item)}
+                              {translateAudienceTag(item, t)}
                             </FilterChip>
                           ))}
                         </ChipRow>
@@ -394,15 +411,21 @@ export function AudienceFiltersPanel({
 
                       <div className="grid sm:grid-cols-2 gap-4">
                         <SelectField
-                          label={FILTER_UI.sections.bidStrategy}
+                          label={t("audience.sec.bidStrategy")}
                           value={google.bidStrategy}
-                          options={GOOGLE_BID_STRATEGY_OPTIONS}
+                          options={GOOGLE_BID_STRATEGY_OPTIONS.map((o) => ({
+                            value: o.value,
+                            label: translateBidLabel(o.value, t),
+                          }))}
                           onChange={(v) => updateGoogle({ bidStrategy: v })}
                         />
                         <SelectField
-                          label={FILTER_UI.sections.parentalStatus}
+                          label={t("audience.sec.parental")}
                           value={google.parentalStatus}
-                          options={GOOGLE_PARENTAL_OPTIONS}
+                          options={GOOGLE_PARENTAL_OPTIONS.map((o) => ({
+                            value: o.value,
+                            label: translateParentalLabel(o.value, t),
+                          }))}
                           onChange={(v) => updateGoogle({ parentalStatus: v })}
                         />
                       </div>
@@ -413,14 +436,18 @@ export function AudienceFiltersPanel({
                         <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/[0.06]">
                           {google.placements.map((p) => (
                             <Badge key={p} variant="gold" className="text-[10px]">
-                              {GOOGLE_PLACEMENT_OPTIONS.find((o) => o.value === p)?.label ?? p}
+                              {translatePlacementLabel(p, t)}
                             </Badge>
                           ))}
                           {google.keywords.map((k) => (
-                            <Badge key={k} variant="outline" className="text-[10px]">{formatFilterLabel(k)}</Badge>
+                            <Badge key={k} variant="outline" className="text-[10px]">
+                              {translateAudienceTag(k, t)}
+                            </Badge>
                           ))}
                           {google.inMarket.map((i) => (
-                            <Badge key={i} variant="outline" className="text-[10px]">{formatFilterLabel(i)}</Badge>
+                            <Badge key={i} variant="outline" className="text-[10px]">
+                              {translateAudienceTag(i, t)}
+                            </Badge>
                           ))}
                         </div>
                       )}
@@ -436,7 +463,15 @@ export function AudienceFiltersPanel({
   );
 }
 
-function ButtonLikeToggle({ open, onClick }: { open: boolean; onClick: () => void }) {
+function ButtonLikeToggle({
+  open,
+  onClick,
+  label,
+}: {
+  open: boolean;
+  onClick: () => void;
+  label: string;
+}) {
   return (
     <button
       type="button"
@@ -450,7 +485,7 @@ function ButtonLikeToggle({ open, onClick }: { open: boolean; onClick: () => voi
     >
       <span className="flex items-center gap-2">
         <SlidersHorizontal className="h-4 w-4" />
-        {FILTER_UI.customizeButton}
+        {label}
       </span>
       <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
     </button>

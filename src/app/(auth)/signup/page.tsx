@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/providers/auth-provider";
+import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 
 export default function SignupPage() {
@@ -18,13 +19,14 @@ export default function SignupPage() {
   const { signup } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await signup(email || "kashish@crestorigin.com", name || "Kashish", password);
-      toast({ title: "Account created", description: "Let's set up your profile.", variant: "success" });
+      toast({ title: t("auth.accountCreated"), description: t("auth.setupProfile"), variant: "success" });
       router.push("/otp");
     } finally {
       setLoading(false);
@@ -46,32 +48,32 @@ export default function SignupPage() {
               <span className="text-gold font-bold">C</span>
             </div>
           </Link>
-          <h1 className="text-2xl font-semibold">Create your account</h1>
-          <p className="text-sm text-white/50">Create your CREST OS account</p>
+          <h1 className="text-2xl font-semibold">{t("auth.createAccount")}</h1>
+          <p className="text-sm text-white/50">{t("auth.createCrest")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-white/[0.06] bg-card p-8">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input id="name" placeholder="Kashish" value={name} onChange={(e) => setName(e.target.value)} />
+            <Label htmlFor="name">{t("auth.fullName")}</Label>
+            <Input id="name" placeholder={t("auth.namePh")} value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Label htmlFor="email">{t("auth.email")}</Label>
+            <Input id="email" type="email" placeholder={t("auth.emailPh")} value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("auth.password")}</Label>
             <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? t("auth.creating") : t("auth.createAccountBtn")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-white/50">
-          Already have an account?{" "}
+          {t("auth.hasAccount")}{" "}
           <Link href="/login" className="text-gold hover:text-gold-light">
-            Sign in
+            {t("auth.signIn")}
           </Link>
         </p>
       </motion.div>

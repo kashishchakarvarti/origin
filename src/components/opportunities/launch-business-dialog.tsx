@@ -86,14 +86,14 @@ export function LaunchBusinessDialog({
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
+          <div className="absolute inset-0 media-scrim--dialog" />
           <div className="absolute bottom-4 left-6 right-6">
             <div className="flex gap-2 mb-2">
               <Badge variant="outline">{tn(opportunity.country)}</Badge>
               <Badge variant="gold">{tn(opportunity.category)}</Badge>
             </div>
             <DialogHeader className="text-left space-y-1">
-              <DialogTitle className="text-2xl">{tn(opportunity.name)}</DialogTitle>
+              <DialogTitle className="text-2xl on-media-text text-white drop-shadow-md">{tn(opportunity.name)}</DialogTitle>
               <DialogDescription className="text-white/50">
                 {t("opp.subtitle")}
               </DialogDescription>

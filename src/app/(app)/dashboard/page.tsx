@@ -55,7 +55,7 @@ export default function DashboardPage() {
         transition={{ duration: 0.5 }}
       >
         <p className="text-white/50 text-lg">{greeting},</p>
-        <h1 className="text-4xl font-semibold tracking-tight mt-1">{name || "Kashish"}</h1>
+        <h1 className="text-4xl font-semibold tracking-tight mt-1">{name || t("dash.fallbackName")}</h1>
       </motion.div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

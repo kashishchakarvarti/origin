@@ -156,12 +156,52 @@ export const AI_RESPONSES: Record<string, string> = {
 };
 
 export const NOTIFICATION_TEMPLATES = [
-  { title: "Business Launched", message: "{name} is now live in {country}." },
-  { title: "Inventory Reserved", message: "Stock secured for {name} — {count} units ready." },
-  { title: "Demand Update", message: "{category} demand rose 28% in {country}." },
-  { title: "First Order Received", message: "{name} received its first order." },
-  { title: "Price Recommendation", message: "Suggested price for {name} updated to {price}." },
-  { title: "Mission Milestone", message: "{name} reached {step}." },
-  { title: "Revenue Milestone", message: "{name} crossed {amount} in revenue." },
-  { title: "Expansion Eligible", message: "{name} qualifies for multi-country expansion." },
-];
+  {
+    title: "Business Launched",
+    titleKey: "notif.launched.title",
+    messageKey: "notif.launched.msg",
+    message: "{name} is now live in {country}.",
+  },
+  {
+    title: "Inventory Reserved",
+    titleKey: "notif.inventory.title",
+    messageKey: "notif.inventory.msg",
+    message: "Stock secured for {name} — {count} units ready.",
+  },
+  {
+    title: "Demand Update",
+    titleKey: "notif.demand.title",
+    messageKey: "notif.demand.msg",
+    message: "{category} demand rose 28% in {country}.",
+  },
+  {
+    title: "First Order Received",
+    titleKey: "notif.firstOrder.title",
+    messageKey: "notif.firstOrder.msg",
+    message: "{name} received its first order.",
+  },
+  {
+    title: "Price Recommendation",
+    titleKey: "notif.price.title",
+    messageKey: "notif.price.msg",
+    message: "Suggested price for {name} updated to {price}.",
+  },
+  {
+    title: "Mission Milestone",
+    titleKey: "notif.mission.title",
+    messageKey: "notif.mission.msg",
+    message: "{name} reached {step}.",
+  },
+  {
+    title: "Revenue Milestone",
+    titleKey: "notif.revenue.title",
+    messageKey: "notif.revenue.msg",
+    message: "{name} crossed {amount} in revenue.",
+  },
+  {
+    title: "Expansion Eligible",
+    titleKey: "notif.expansion.title",
+    messageKey: "notif.expansion.msg",
+    message: "{name} qualifies for multi-country expansion.",
+  },
+] as const;

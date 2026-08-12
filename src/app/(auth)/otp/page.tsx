@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 
 export default function OTPPage() {
@@ -12,6 +13,7 @@ export default function OTPPage() {
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
@@ -28,7 +30,7 @@ export default function OTPPage() {
   };
 
   const handleVerify = () => {
-    toast({ title: "Verified", description: "Email verified successfully.", variant: "success" });
+    toast({ title: t("auth.verified"), description: t("auth.emailVerified"), variant: "success" });
     router.push("/profile-setup");
   };
 
@@ -40,8 +42,8 @@ export default function OTPPage() {
         className="w-full max-w-md space-y-8 text-center"
       >
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold">Verify your email</h1>
-          <p className="text-sm text-white/50">Enter the 6-digit code we sent you</p>
+          <h1 className="text-2xl font-semibold">{t("auth.verifyEmail")}</h1>
+          <p className="text-sm text-white/50">{t("auth.enterCode")}</p>
         </div>
 
         <div className="flex justify-center gap-3">
@@ -61,14 +63,14 @@ export default function OTPPage() {
         </div>
 
         <Button onClick={handleVerify} className="w-full max-w-md">
-          Verify
+          {t("auth.verify")}
         </Button>
 
         <button
-          onClick={() => toast({ title: "Code resent", description: "A new code has been sent." })}
+          onClick={() => toast({ title: t("auth.codeResent"), description: t("auth.newCodeSent") })}
           className="text-sm text-gold hover:text-gold-light"
         >
-          Resend code
+          {t("auth.resend")}
         </button>
       </motion.div>
     </div>

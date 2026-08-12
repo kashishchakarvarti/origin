@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TranslatedStatus } from "@/components/ui/translated-status";
 import { crestStore } from "@/lib/data/store";
 import { type LanguageCode } from "@/lib/i18n";
 import { maskAddress, maskEmail, maskPhone } from "@/lib/mask";
@@ -35,11 +36,6 @@ const DOC_NAME_KEYS: Record<string, string> = {
   "Tax Certificate": "profile.doc.tax",
 };
 
-const DOC_STATUS_KEYS: Record<string, string> = {
-  Verified: "profile.docStatus.verified",
-  Pending: "profile.docStatus.pending",
-  Rejected: "profile.docStatus.rejected",
-};
 
 const DATE_LOCALES: Record<string, string> = {
   en: "en-US",
@@ -63,8 +59,6 @@ export default function ProfilePage() {
 
   const translateDocName = (name: string) =>
     DOC_NAME_KEYS[name] ? t(DOC_NAME_KEYS[name]) : name;
-  const translateDocStatus = (status: string) =>
-    DOC_STATUS_KEYS[status] ? t(DOC_STATUS_KEYS[status]) : status;
 
   const [name, setName] = useState(profile?.name ?? "");
   const [emailNotif, setEmailNotif] = useState(profile?.settings.emailNotifications ?? true);
@@ -175,7 +169,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 </div>
-                <Badge variant="live">{translateDocStatus(doc.status)}</Badge>
+                <Badge variant="live"><TranslatedStatus kind="doc" status={doc.status} /></Badge>
               </div>
             ))}
           </div>

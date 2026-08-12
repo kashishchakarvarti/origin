@@ -6,7 +6,7 @@ import { normalizeAudienceTargeting } from "../audience-filters";
 import { DEMO_CREDENTIALS } from "../constants";
 import { createBusinessFromOpportunity, createCustomBusiness, generateSeedData } from "./generator";
 
-const STORAGE_KEY = "crest_os_data_v8";
+const STORAGE_KEY = "crest_os_data_v9";
 const AUTH_KEY = "crest_os_auth";
 const DEMO_KEY = "crest_os_demo";
 
@@ -177,6 +177,9 @@ export const crestStore = {
       id: `notif_${Date.now()}`,
       title: "Business Launched",
       message: `${business.name} is now live in ${business.country}.`,
+      titleKey: "notif.launched.title",
+      messageKey: "notif.launched.msg",
+      vars: { name: business.name, country: business.country },
       type: "success",
       read: false,
       createdAt: new Date().toISOString(),
@@ -217,6 +220,9 @@ export const crestStore = {
       id: `notif_${Date.now()}`,
       title: "Business Launched",
       message: `${business.name} is now live in ${business.country}.`,
+      titleKey: "notif.launched.title",
+      messageKey: "notif.launched.msg",
+      vars: { name: business.name, country: business.country },
       type: "success",
       read: false,
       createdAt: new Date().toISOString(),
@@ -321,16 +327,43 @@ export const crestStore = {
 
     if (Math.random() > 0.5) {
       const biz = data.userBusinesses[Math.floor(Math.random() * data.userBusinesses.length)];
-      const templates = [
-        { title: "New Order", message: `${biz.name} received a new order.` },
-        { title: "Revenue Update", message: `${biz.name} revenue increased by ${Math.floor(growthFactor * 100)}%.` },
-        { title: "Inventory Alert", message: `Stock replenished for ${biz.name}.` },
+      const templates: {
+        title: string;
+        titleKey: string;
+        messageKey: string;
+        message: string;
+        vars: Record<string, string>;
+      }[] = [
+        {
+          title: "New Order",
+          titleKey: "notif.newOrder.title",
+          messageKey: "notif.newOrder.msg",
+          message: `${biz.name} received a new order.`,
+          vars: { name: biz.name },
+        },
+        {
+          title: "Revenue Update",
+          titleKey: "notif.revenueUp.title",
+          messageKey: "notif.revenueUp.msg",
+          message: `${biz.name} revenue increased by ${Math.floor(growthFactor * 100)}%.`,
+          vars: { name: biz.name, pct: String(Math.floor(growthFactor * 100)) },
+        },
+        {
+          title: "Inventory Alert",
+          titleKey: "notif.stock.title",
+          messageKey: "notif.stock.msg",
+          message: `Stock replenished for ${biz.name}.`,
+          vars: { name: biz.name },
+        },
       ];
       const t = templates[Math.floor(Math.random() * templates.length)];
       data.notifications.unshift({
         id: `notif_${Date.now()}`,
         title: t.title,
         message: t.message,
+        titleKey: t.titleKey,
+        messageKey: t.messageKey,
+        vars: t.vars,
         type: "info",
         read: false,
         createdAt: new Date().toISOString(),

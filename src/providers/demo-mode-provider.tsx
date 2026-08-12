@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { crestStore } from "@/lib/data/store";
+import { useLanguage } from "@/providers/language-provider";
 
 interface DemoModeContextType {
   isDemoMode: boolean;
@@ -11,6 +12,24 @@ interface DemoModeContextType {
 }
 
 const DemoModeContext = createContext<DemoModeContextType | null>(null);
+
+function DemoModeBadge() {
+  const { t } = useLanguage();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="fixed bottom-6 left-6 z-[100] flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-medium text-gold backdrop-blur-xl"
+    >
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-75" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+      </span>
+      {t("demo.active")}
+    </motion.div>
+  );
+}
 
 export function DemoModeProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
@@ -56,20 +75,7 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
     <DemoModeContext.Provider value={{ isDemoMode, toggleDemoMode }}>
       {children}
       <AnimatePresence>
-        {isDemoMode && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 left-6 z-[100] flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-medium text-gold backdrop-blur-xl"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
-            </span>
-            Demo Mode Active
-          </motion.div>
-        )}
+        {isDemoMode && <DemoModeBadge />}
       </AnimatePresence>
     </DemoModeContext.Provider>
   );

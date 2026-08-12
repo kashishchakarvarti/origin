@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DEMO_CREDENTIALS } from "@/lib/constants";
-import { useAuth } from "@/providers/auth-provider";
+import { AUTH_INVALID_CREDS, useAuth } from "@/providers/auth-provider";
+import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 
 export default function LoginPage() {
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const { login, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -30,12 +32,18 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      toast({ title: "Welcome back", description: "Signed in successfully.", variant: "success" });
+      toast({ title: t("auth.welcomeBack"), description: t("auth.signedIn"), variant: "success" });
       router.replace("/dashboard");
     } catch (err) {
+      const description =
+        err instanceof Error && err.message === AUTH_INVALID_CREDS
+          ? t("auth.invalidCreds")
+          : err instanceof Error
+            ? err.message
+            : t("auth.invalidCreds");
       toast({
-        title: "Sign in failed",
-        description: err instanceof Error ? err.message : "Invalid email or password.",
+        title: t("auth.signInFailed"),
+        description,
         variant: "error",
       });
     } finally {
@@ -58,17 +66,17 @@ export default function LoginPage() {
               <span className="text-gold font-bold">C</span>
             </div>
           </Link>
-          <h1 className="text-2xl font-semibold">Welcome back</h1>
-          <p className="text-sm text-white/50">Sign in to CREST OS</p>
+          <h1 className="text-2xl font-semibold">{t("auth.welcomeBack")}</h1>
+          <p className="text-sm text-white/50">{t("auth.signInTo")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-white/[0.06] bg-card p-8">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("auth.email")}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="you@mail.com"
+              placeholder={t("auth.emailPh")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -77,9 +85,9 @@ export default function LoginPage() {
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.password")}</Label>
               <Link href="/forgot-password" className="text-xs text-gold hover:text-gold-light">
-                Forgot password?
+                {t("auth.forgot")}
               </Link>
             </div>
             <Input
@@ -93,14 +101,14 @@ export default function LoginPage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? t("auth.signingIn") : t("auth.signIn")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-white/50">
-          Don&apos;t have an account?{" "}
+          {t("auth.noAccount")}{" "}
           <Link href="/signup" className="text-gold hover:text-gold-light">
-            Sign up
+            {t("auth.signUp")}
           </Link>
         </p>
       </motion.div>

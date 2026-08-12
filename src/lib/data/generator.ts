@@ -265,18 +265,34 @@ export function generateNotifications(count: number, businesses: UserBusiness[])
     const rand = seededRandom(i * 5432 + 400);
     const business = pick(businesses, rand);
     const template = pick(NOTIFICATION_TEMPLATES, rand);
+    const countUnits = String(range(50, 500, rand));
+    const price = `$${business.currentSellingPrice.toFixed(2)}`;
+    const step = pick(MISSION_STEPS, rand);
+    const amount = `₹${range(1, 50, rand)},${range(10, 99, rand)},000`;
+    const vars: Record<string, string> = {
+      name: business.name,
+      country: business.country,
+      category: business.category,
+      count: countUnits,
+      price,
+      step,
+      amount,
+    };
     const message = template.message
       .replace("{name}", business.name)
       .replace("{country}", business.country)
       .replace("{category}", business.category)
-      .replace("{count}", String(range(50, 500, rand)))
-      .replace("{price}", `$${business.currentSellingPrice.toFixed(2)}`)
-      .replace("{step}", pick(MISSION_STEPS, rand))
-      .replace("{amount}", `₹${range(1, 50, rand)},${range(10, 99, rand)},000`);
+      .replace("{count}", countUnits)
+      .replace("{price}", price)
+      .replace("{step}", step)
+      .replace("{amount}", amount);
     notifications.push({
       id: `notif_${i + 1}`,
       title: template.title,
       message,
+      titleKey: template.titleKey,
+      messageKey: template.messageKey,
+      vars,
       type: pick(types, rand),
       read: rand() > 0.4,
       createdAt: new Date(Date.now() - range(0, 30, rand) * 86400000).toISOString(),

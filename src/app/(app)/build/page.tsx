@@ -16,11 +16,11 @@ import { CATEGORIES, COUNTRIES } from "@/lib/constants";
 import {
   DEFAULT_AUDIENCE,
   estimateAudienceReach,
-  formatAudienceReach,
+  isAiDecidedTargeting,
   resolveAudienceTargeting,
-  summarizeTargeting,
   type AudienceTargeting,
 } from "@/lib/audience-filters";
+import { formatAudienceReachI18n, summarizeTargetingI18n } from "@/lib/translate-audience";
 import { crestStore } from "@/lib/data/store";
 import { formatINR, formatNumber } from "@/lib/format";
 import type { Category, Country, Product } from "@/lib/types";
@@ -281,15 +281,20 @@ export default function BuildBusinessPage() {
               <>
                 <SummaryRow
                   label={t("build.targeting")}
-                  value={summarizeTargeting(audienceTargeting, category, country)}
+                  value={summarizeTargetingI18n(
+                    resolveAudienceTargeting(audienceTargeting, category, country),
+                    t,
+                    isAiDecidedTargeting(audienceTargeting)
+                  )}
                 />
                 <SummaryRow
                   label={t("build.estReach")}
-                  value={formatAudienceReach(
+                  value={formatAudienceReachI18n(
                     estimateAudienceReach(
                       country,
                       resolveAudienceTargeting(audienceTargeting, category, country)
-                    )
+                    ),
+                    t
                   )}
                   highlight
                 />

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 
 export default function ForgotPasswordPage() {
@@ -14,11 +15,12 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSent(true);
-    toast({ title: "Reset link sent", description: "Check your email for instructions.", variant: "success" });
+    toast({ title: t("auth.resetSent"), description: t("auth.checkEmail"), variant: "success" });
   };
 
   return (
@@ -29,29 +31,29 @@ export default function ForgotPasswordPage() {
         className="w-full max-w-md space-y-8"
       >
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-semibold">Reset password</h1>
-          <p className="text-sm text-white/50">We&apos;ll send you a reset link</p>
+          <h1 className="text-2xl font-semibold">{t("auth.resetPassword")}</h1>
+          <p className="text-sm text-white/50">{t("auth.sendReset")}</p>
         </div>
 
         {sent ? (
           <div className="rounded-2xl border border-white/[0.06] bg-card p-8 text-center space-y-4">
-            <p className="text-white/70">Check your inbox for a password reset link.</p>
+            <p className="text-white/70">{t("auth.checkInbox")}</p>
             <Button onClick={() => router.push("/login")} className="w-full">
-              Back to Login
+              {t("auth.backLogin")}
             </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-white/[0.06] bg-card p-8">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Label htmlFor="email">{t("auth.email")}</Label>
+              <Input id="email" type="email" placeholder={t("auth.emailPh")} value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full">Send Reset Link</Button>
+            <Button type="submit" className="w-full">{t("auth.sendResetLink")}</Button>
           </form>
         )}
 
         <p className="text-center text-sm text-white/50">
-          <Link href="/login" className="text-gold hover:text-gold-light">Back to login</Link>
+          <Link href="/login" className="text-gold hover:text-gold-light">{t("auth.backLogin")}</Link>
         </p>
       </motion.div>
     </div>

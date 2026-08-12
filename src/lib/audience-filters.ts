@@ -570,16 +570,13 @@ export function resolveAudienceTargeting(
 
 export function summarizeTargeting(
   targeting: AudienceTargeting,
-  category?: string | null,
-  country?: string | null
+  _category?: string | null,
+  _country?: string | null
 ): string {
   if (isAiDecidedTargeting(targeting)) {
-    return "AI-optimized targeting";
+    return "AI Targeting";
   }
-  const resolved = resolveAudienceTargeting(targeting, category, country);
-  const audience = summarizeAudience(resolved);
-  const google = summarizeGoogleAudience(resolved);
-  return google === "Standard ad setup" ? audience : `${audience} · ${google}`;
+  return "Custom Targeting";
 }
 
 export function summarizeAudience(targeting: AudienceTargeting): string {

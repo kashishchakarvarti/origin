@@ -10,11 +10,16 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 import { Badge } from "@/components/ui/badge";
 import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TranslatedStatus } from "@/components/ui/translated-status";
 import { MissionTimeline } from "@/components/mission-control/mission-timeline";
 import { ReviewsPanel } from "@/components/reviews/reviews-panel";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import { maskEmail, maskPhone } from "@/lib/mask";
-import { estimateAudienceReach, formatAudienceReach, formatFilterLabel, isAiDecidedTargeting, normalizeAudienceTargeting, resolveAudienceTargeting, summarizeTargeting } from "@/lib/audience-filters";
+import { estimateAudienceReach, isAiDecidedTargeting, normalizeAudienceTargeting, resolveAudienceTargeting } from "@/lib/audience-filters";
+import {
+  formatAudienceReachI18n,
+  summarizeTargetingI18n,
+} from "@/lib/translate-audience";
 import { useCrestData, useOrders, useReviews, useUserBusiness } from "@/hooks/use-crest-data";
 import { useLanguage } from "@/providers/language-provider";
 
@@ -23,7 +28,7 @@ export default function BusinessDetailPage() {
   const { data: business, isLoading } = useUserBusiness(id);
   const { data: orders = [] } = useOrders(id);
   const { data: appData } = useCrestData();
-  const { t, tn } = useLanguage();
+  const { t, tn, language } = useLanguage();
 
   const products = useMemo(() => {
     if (!business || !appData) return [];
@@ -70,7 +75,7 @@ export default function BusinessDetailPage() {
 
       <div className="relative h-56 rounded-2xl overflow-hidden">
         <CrestImage src={business.image} category={business.category} seed={business.id} alt={tn(business.name)} fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-black/40" />
+        <div className="absolute inset-0 media-scrim--hero" />
         <div className="absolute bottom-6 left-6 right-6">
           <div className="flex flex-wrap gap-2 mb-2">
             <OnMediaChip
@@ -83,12 +88,12 @@ export default function BusinessDetailPage() {
               }
               className="uppercase"
             >
-              {t(`biz.status.${business.status}`)}
+              <TranslatedStatus kind="biz" status={business.status} />
             </OnMediaChip>
             <OnMediaChip variant="country">{tn(business.country)}</OnMediaChip>
             <OnMediaChip variant="category">{tn(business.category)}</OnMediaChip>
           </div>
-          <h1 className="text-3xl font-semibold text-white drop-shadow-md">{tn(business.name)}</h1>
+          <h1 className="text-3xl font-semibold on-media-text text-white drop-shadow-md">{tn(business.name)}</h1>
         </div>
       </div>
 
@@ -132,27 +137,11 @@ export default function BusinessDetailPage() {
             <div className="mt-6 rounded-2xl border border-white/[0.06] bg-card p-6 space-y-3">
               <p className="text-sm font-medium text-white/50">{t("biz.targeting")}</p>
               <p className="text-sm text-white/80">
-                {summarizeTargeting(audience, business.category, business.country)}
+                {summarizeTargetingI18n(resolved, t, aiDecided)}
               </p>
               <p className="text-sm text-gold">
-                {formatAudienceReach(estimateAudienceReach(business.country, resolved))}
+                {formatAudienceReachI18n(estimateAudienceReach(business.country, resolved), t)}
               </p>
-              {!aiDecided && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {resolved.interests.map((i) => (
-                    <Badge key={i} variant="gold" className="text-[10px]">{formatFilterLabel(i)}</Badge>
-                  ))}
-                  {resolved.behaviors.map((b) => (
-                    <Badge key={b} variant="outline" className="text-[10px]">{formatFilterLabel(b)}</Badge>
-                  ))}
-                  {resolved.google.keywords.map((k) => (
-                    <Badge key={k} variant="outline" className="text-[10px]">{formatFilterLabel(k)}</Badge>
-                  ))}
-                  {resolved.google.inMarket.map((i) => (
-                    <Badge key={i} variant="gold" className="text-[10px]">{formatFilterLabel(i)}</Badge>
-                  ))}
-                </div>
-              )}
             </div>
             );
           })()}
@@ -164,7 +153,7 @@ export default function BusinessDetailPage() {
               <p className="p-8 text-center text-white/40">{t("biz.noOrders")}</p>
             ) : (
               orders.slice(0, 15).map((order) => (
-                <div key={order.id} className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/[0.04] last:border-0">
+                <div key={`${language}-${order.id}`} className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/[0.04] last:border-0">
                   <div className="min-w-0">
                     <p className="text-sm font-medium">{order.customerName}</p>
                     <p className="text-xs text-white/50 font-mono tracking-wide mt-0.5 truncate">
@@ -177,7 +166,9 @@ export default function BusinessDetailPage() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-medium">{formatINR(order.amount)}</p>
-                    <Badge variant="outline" className="mt-1">{order.status}</Badge>
+                    <Badge variant="outline" className="mt-1">
+                      <TranslatedStatus kind="order" status={order.status} />
+                    </Badge>
                   </div>
                 </div>
               ))

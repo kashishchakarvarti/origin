@@ -39,33 +39,36 @@ html.dark {
   color-scheme: dark;
 }
 
-/* Light theme — clean SaaS neutrals, high-contrast type */
+/* Light theme — editorial graphite + crisp cards + crest gold */
 html.light {
-  --crest-bg: #f5f5f7;
-  --crest-fg: #0a0a0a;
-  --crest-fg-secondary: #3f3f46;
-  --crest-fg-muted: #52525b;
-  --crest-fg-subtle: #71717a;
+  --crest-bg: #eef0f4;
+  --crest-fg: #0c0d10;
+  --crest-fg-secondary: #2a2d36;
+  --crest-fg-muted: #3f4450;
+  --crest-fg-subtle: #5a6170;
   --crest-card: #ffffff;
-  --crest-muted: #52525b;
-  --crest-border: rgba(9, 9, 11, 0.1);
-  --crest-surface: rgba(9, 9, 11, 0.04);
-  --crest-header: rgba(255, 255, 255, 0.92);
-  --crest-sidebar: rgba(255, 255, 255, 0.96);
-  --crest-gold: #9a7818;
-  --crest-gold-light: #b8922a;
-  --crest-shadow: 0 1px 2px rgba(9, 9, 11, 0.04), 0 8px 24px rgba(9, 9, 11, 0.06);
+  --crest-muted: #3f4450;
+  --crest-border: rgba(15, 18, 28, 0.1);
+  --crest-surface: rgba(15, 18, 28, 0.045);
+  --crest-header: rgba(255, 255, 255, 0.88);
+  --crest-sidebar: #f7f8fb;
+  --crest-gold: #b8891a;
+  --crest-gold-light: #d4a82a;
+  --crest-shadow:
+    0 1px 1px rgba(15, 18, 28, 0.04),
+    0 8px 20px rgba(15, 18, 28, 0.06),
+    0 18px 40px rgba(15, 18, 28, 0.05);
   --crest-input-bg: #ffffff;
-  --crest-input-border: rgba(9, 9, 11, 0.12);
+  --crest-input-border: rgba(15, 18, 28, 0.14);
   /* On-image chips — frosted / solid for light UI */
-  --on-media-country-bg: rgba(255, 255, 255, 0.96);
-  --on-media-country-fg: #0a0a0a;
-  --on-media-country-border: rgba(9, 9, 11, 0.16);
-  --on-media-category-bg: #9a7818;
-  --on-media-category-fg: #ffffff;
-  --on-media-category-border: #7a5f12;
-  --on-media-neutral-bg: rgba(255, 255, 255, 0.96);
-  --on-media-neutral-fg: #0a0a0a;
+  --on-media-country-bg: rgba(255, 255, 255, 0.97);
+  --on-media-country-fg: #0c0d10;
+  --on-media-country-border: rgba(15, 18, 28, 0.14);
+  --on-media-category-bg: #c9961f;
+  --on-media-category-fg: #14120a;
+  --on-media-category-border: #a87a12;
+  --on-media-neutral-bg: rgba(255, 255, 255, 0.97);
+  --on-media-neutral-fg: #0c0d10;
   --on-media-live-bg: #047857;
   --on-media-live-fg: #ffffff;
   --on-media-live-border: #059669;
@@ -133,38 +136,38 @@ body {
 /* -------------------------------------------------------------------------- */
 
 html.light .text-white:not(.on-media-chip):not(.status-on-media) {
-  color: #0a0a0a;
+  color: #0c0d10;
 }
 html.light .text-white\/90:not(.on-media-chip *) {
-  color: #18181b;
+  color: #16181d;
 }
 html.light .text-white\/80:not(.on-media-chip *) {
-  color: #27272a;
+  color: #22252c;
 }
 html.light .text-white\/70:not(.on-media-chip *) {
-  color: #3f3f46;
+  color: #2f333c;
 }
 html.light .text-white\/60:not(.on-media-chip *) {
-  color: #52525b;
+  color: #3f4450;
 }
 html.light .text-white\/50:not(.on-media-chip *) {
-  color: #52525b;
+  color: #454b58;
 }
 html.light .text-white\/45:not(.on-media-chip *) {
-  color: #5b5b64;
+  color: #4c5361;
 }
 html.light .text-white\/40:not(.on-media-chip *) {
-  color: #63636c;
+  color: #535a69;
 }
 html.light .text-white\/35:not(.on-media-chip *) {
-  color: #71717a;
+  color: #5c6474;
 }
 html.light .text-white\/30:not(.on-media-chip *) {
-  color: #7a7a84;
+  color: #667084;
 }
 
 html.light .placeholder\:text-white\/30::placeholder {
-  color: #8b8b96;
+  color: #7a8496;
 }
 
 html.light .hover\:text-white:hover:not(.on-media-chip):not(.status-on-media) {
@@ -232,7 +235,13 @@ html.light .data-\[state\=active\]\:text-white[data-state="active"] {
   color: #0a0a0a;
 }
 html.light .data-\[state\=active\]\:bg-white\/\[0\.08\][data-state="active"] {
-  background-color: rgba(9, 9, 11, 0.08);
+  background-color: rgba(15, 18, 28, 0.07);
+}
+
+/* Sidebar active row — clearer in light */
+html.light aside .bg-white\/\[0\.08\] {
+  background-color: rgba(15, 18, 28, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(15, 18, 28, 0.04);
 }
 html.light .data-\[state\=unchecked\]\:bg-white\/10[data-state="unchecked"] {
   background-color: rgba(9, 9, 11, 0.15);
@@ -285,25 +294,69 @@ html.light .bg-\[\#050505\]\/80 {
 html.light .bg-card {
   background-color: #ffffff;
   box-shadow: var(--crest-shadow);
-  border-color: rgba(9, 9, 11, 0.08);
+  border-color: rgba(15, 18, 28, 0.08);
 }
 
 html.light .shadow-2xl,
 html.light .shadow-black\/40,
 html.light .shadow-black\/50,
 html.light .shadow-black\/30 {
-  --tw-shadow-color: rgba(9, 9, 11, 0.08);
+  --tw-shadow-color: rgba(15, 18, 28, 0.12);
 }
 
 html.light .crest-shell {
-  background: var(--crest-sidebar) !important;
+  background:
+    linear-gradient(180deg, #fbfbfd 0%, var(--crest-sidebar) 40%, #f3f4f8 100%) !important;
+  border-right-color: rgba(15, 18, 28, 0.08) !important;
+  box-shadow: 4px 0 24px rgba(15, 18, 28, 0.03);
 }
 
 html.light .crest-logo-wordmark {
-  color: #0a0a0a;
+  color: #0c0d10;
 }
 html.light .crest-logo-sub {
-  color: #71717a;
+  color: #5a6170;
+}
+
+/* Photo overlays — never wash images with white card color */
+.media-scrim {
+  background:
+    linear-gradient(to top, var(--crest-card) 0%, transparent 32%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.42) 0%, transparent 42%);
+}
+.media-scrim--hero {
+  background:
+    linear-gradient(to top, var(--crest-card) 0%, rgba(5, 5, 5, 0.35) 38%, transparent 70%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, transparent 40%);
+}
+.media-scrim--dialog {
+  background: linear-gradient(to top, var(--crest-card) 0%, rgba(5, 5, 5, 0.45) 55%, transparent 100%);
+}
+
+html.light .media-scrim {
+  background:
+    linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.72) 10%, transparent 30%),
+    linear-gradient(to bottom, rgba(12, 13, 16, 0.45) 0%, transparent 46%);
+}
+html.light .media-scrim--hero {
+  background:
+    linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.55) 16%, transparent 46%),
+    linear-gradient(to bottom, rgba(12, 13, 16, 0.4) 0%, transparent 44%);
+}
+html.light .media-scrim--dialog {
+  background: linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.28) 38%, transparent 100%);
+}
+
+/* Keep titles/meta readable on photo overlays in light mode */
+html.light .on-media-text,
+html.light .on-media-text.text-white {
+  color: #ffffff !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+html.light .on-media-text-muted,
+html.light .on-media-text-muted.text-white\/80 {
+  color: rgba(255, 255, 255, 0.88) !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
 html.light .text-black {
@@ -319,7 +372,7 @@ html.light [data-slot="select-trigger"] {
   color: #0a0a0a;
 }
 
-/* Soft ambient wash — cool neutral, not cream */
+/* Ambient depth — cool graphite + soft gold edge (not cream / not purple) */
 html.light body::before {
   content: "";
   position: fixed;
@@ -327,13 +380,52 @@ html.light body::before {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(255, 255, 255, 0.9), transparent 55%),
-    radial-gradient(ellipse 35% 28% at 92% 8%, rgba(154, 120, 24, 0.06), transparent 50%);
+    radial-gradient(ellipse 80% 50% at 50% -12%, rgba(255, 255, 255, 0.95), transparent 58%),
+    radial-gradient(ellipse 42% 34% at 100% 0%, rgba(184, 137, 26, 0.09), transparent 55%),
+    radial-gradient(ellipse 38% 30% at 0% 100%, rgba(60, 72, 100, 0.07), transparent 55%),
+    linear-gradient(180deg, #f4f5f8 0%, #eef0f4 45%, #e9ebf0 100%);
 }
 
 html.light body > * {
   position: relative;
   z-index: 1;
+}
+
+/* Opportunity / surface cards — lift + gold edge on hover in light */
+html.light .crest-card-lift {
+  transition:
+    transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+html.light .crest-card-lift:hover {
+  transform: translateY(-3px);
+  border-color: rgba(184, 137, 26, 0.28) !important;
+  box-shadow:
+    0 2px 4px rgba(15, 18, 28, 0.04),
+    0 14px 32px rgba(15, 18, 28, 0.1),
+    0 0 0 1px rgba(184, 137, 26, 0.08);
+}
+
+html.light .crest-metric-panel {
+  background: linear-gradient(180deg, #f8f9fb 0%, #f3f4f8 100%);
+  border: 1px solid rgba(15, 18, 28, 0.06);
+  border-radius: 0.85rem;
+}
+
+html.light .crest-proof-panel {
+  background: linear-gradient(135deg, rgba(184, 137, 26, 0.1), rgba(184, 137, 26, 0.04));
+  border-color: rgba(184, 137, 26, 0.22) !important;
+}
+
+html.light .bg-gold {
+  background-color: #c9961f;
+  color: #14120a;
+  box-shadow: 0 8px 22px rgba(184, 137, 26, 0.28);
+}
+html.light .hover\:bg-gold-light:hover,
+html.light .bg-gold:hover {
+  background-color: #d4a82a;
 }
 
 /* Theme-aware chips over images */
@@ -465,15 +557,34 @@ html.light .badge-live {
   border-color: rgba(5, 150, 105, 0.25) !important;
 }
 
-/* Gold text stays deep enough on light surfaces */
+/* Gold text — richer on light surfaces, still readable */
 html.light .text-gold {
-  color: #8a6a12;
+  color: #8f6b10;
 }
 html.light .hover\:text-gold:hover {
-  color: #6f560e;
+  color: #74580c;
 }
 html.light .hover\:text-gold-light:hover {
-  color: #9a7818;
+  color: #a87a12;
+}
+
+html.light .bg-gold\/\[0\.05\],
+html.light .bg-gold\/5 {
+  background-color: rgba(184, 137, 26, 0.08);
+}
+html.light .bg-gold\/10 {
+  background-color: rgba(184, 137, 26, 0.12);
+}
+html.light .border-gold\/15 {
+  border-color: rgba(184, 137, 26, 0.22);
+}
+html.light .border-gold\/20 {
+  border-color: rgba(184, 137, 26, 0.28);
+}
+
+/* Progress track — more visible on light surfaces */
+html.light [data-slot="progress"] {
+  background-color: rgba(15, 18, 28, 0.08);
 }
 
 @keyframes shimmer {
