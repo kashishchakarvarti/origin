@@ -2,15 +2,25 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Check, Search } from "lucide-react";
+import { Bell, Check, Globe, Search } from "lucide-react";
 import { useState } from "react";
 import { crestStore } from "@/lib/data/store";
+import { type LanguageCode } from "@/lib/i18n";
 import { useNotifications } from "@/hooks/use-crest-data";
+import { useLanguage } from "@/providers/language-provider";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function Header({ title }: { title?: string }) {
   const { data: notifications = [] } = useNotifications();
+  const { language, setLanguage, languages, t } = useLanguage();
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
@@ -34,11 +44,34 @@ export function Header({ title }: { title?: string }) {
         <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
           <Input
-            placeholder="Search..."
+            placeholder={t("search.placeholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-64 pl-10 h-9 bg-white/[0.03]"
           />
+        </div>
+
+        <div className="hidden sm:flex items-center gap-1.5">
+          <Globe className="h-3.5 w-3.5 text-white/35" />
+          <Select
+            value={language}
+            onValueChange={(v) => {
+              setLanguage(v as LanguageCode);
+              crestStore.updateSettings({ language: v });
+              queryClient.invalidateQueries({ queryKey: ["crest"] });
+            }}
+          >
+            <SelectTrigger className="h-9 w-[130px] bg-white/[0.03] border-white/[0.06] text-xs">
+              <SelectValue placeholder={t("common.language")} />
+            </SelectTrigger>
+            <SelectContent>
+              {languages.map((lang) => (
+                <SelectItem key={lang.code} value={lang.code}>
+                  {lang.native}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="relative">
@@ -67,12 +100,12 @@ export function Header({ title }: { title?: string }) {
                   className="absolute right-0 top-12 z-50 w-96 rounded-2xl border border-white/[0.06] bg-card shadow-2xl overflow-hidden"
                 >
                   <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-                    <p className="text-sm font-semibold">Notifications</p>
+                    <p className="text-sm font-semibold">{t("notifications.title")}</p>
                     <button
                       onClick={handleMarkAllRead}
                       className="text-xs text-gold hover:text-gold-light flex items-center gap-1"
                     >
-                      <Check className="h-3 w-3" /> Mark all read
+                      <Check className="h-3 w-3" /> {t("notifications.markAll")}
                     </button>
                   </div>
                   <div className="max-h-96 overflow-y-auto">

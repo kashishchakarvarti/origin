@@ -1,26 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { getGreeting } from "@/lib/format";
 import { useCrestData } from "@/hooks/use-crest-data";
 import { useAuth } from "@/providers/auth-provider";
+import { useLanguage } from "@/providers/language-provider";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { IntelligenceCard } from "@/components/dashboard/intelligence-card";
 
 export default function DashboardPage() {
   const { data, isLoading } = useCrestData();
   const { name } = useAuth();
+  const { t } = useLanguage();
   const stats = data?.dashboardStats;
   const intelligence = data?.intelligence;
 
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? t("dash.greetingMorning") : hour < 17 ? t("dash.greetingAfternoon") : t("dash.greetingEvening");
+
   const kpis = stats
     ? [
-        { label: "Businesses", value: stats.businesses, format: "number" as const },
-        { label: "Revenue", value: stats.revenue, format: "currency" as const },
-        { label: "Profit", value: stats.profit, format: "currency" as const },
-        { label: "Withdrawable", value: stats.withdrawable, format: "currency" as const },
-        { label: "Countries", value: stats.countries, format: "number" as const },
-        { label: "Orders", value: stats.orders, format: "number" as const },
+        { label: t("dash.businesses"), value: stats.businesses, format: "number" as const },
+        { label: t("dash.revenue"), value: stats.revenue, format: "currency" as const },
+        { label: t("dash.profit"), value: stats.profit, format: "currency" as const },
+        { label: t("dash.withdrawable"), value: stats.withdrawable, format: "currency" as const },
+        { label: t("dash.countries"), value: stats.countries, format: "number" as const },
+        { label: t("dash.orders"), value: stats.orders, format: "number" as const },
       ]
     : [];
 
@@ -47,7 +52,7 @@ export default function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-white/50 text-lg">{getGreeting()},</p>
+        <p className="text-white/50 text-lg">{greeting},</p>
         <h1 className="text-4xl font-semibold tracking-tight mt-1">{name || "Kashish"}</h1>
       </motion.div>
 

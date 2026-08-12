@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { AuthProvider } from "./auth-provider";
 import { DemoModeProvider } from "./demo-mode-provider";
+import { LanguageProvider } from "./language-provider";
 import { ToastProvider } from "./toast-provider";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -23,7 +24,9 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <DemoModeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <LanguageProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </LanguageProvider>
         </DemoModeProvider>
       </AuthProvider>
     </QueryClientProvider>

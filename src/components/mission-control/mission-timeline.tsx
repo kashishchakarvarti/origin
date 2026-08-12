@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import type { MissionStep } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/providers/language-provider";
 
 interface TimelineStep {
   step: MissionStep;
@@ -12,6 +13,7 @@ interface TimelineStep {
 }
 
 export function MissionTimeline({ steps }: { steps: TimelineStep[] }) {
+  const { tn } = useLanguage();
   return (
     <div className="relative max-w-2xl mx-auto">
       {steps.map((item, index) => {
@@ -65,7 +67,7 @@ export function MissionTimeline({ steps }: { steps: TimelineStep[] }) {
                   item.completed ? "text-white" : "text-white/40"
                 )}
               >
-                {item.step}
+                {tn(item.step)}
               </p>
               {item.completed && item.completedAt && (
                 <motion.p

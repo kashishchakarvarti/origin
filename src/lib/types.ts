@@ -1,3 +1,4 @@
+import type { AudienceTargeting } from "./audience-filters";
 import type { CATEGORIES, COUNTRIES, MISSION_STEPS } from "./constants";
 
 export type Category = (typeof CATEGORIES)[number];
@@ -14,6 +15,22 @@ export interface Product {
   image: string;
 }
 
+export type ReviewAuthorType = "customer" | "seller";
+
+export interface Review {
+  id: string;
+  productId?: string;
+  opportunityId?: string;
+  authorName: string;
+  authorType: ReviewAuthorType;
+  rating: number;
+  title: string;
+  comment: string;
+  country: Country;
+  createdAt: string;
+  helpful: number;
+}
+
 export interface Opportunity {
   id: string;
   name: string;
@@ -25,6 +42,7 @@ export interface Opportunity {
   monthlyOrders: number;
   minimumLaunchCost: number;
   availableCapacity: number;
+  peopleStarted: number;
   image: string;
   description: string;
   productsIncluded: string[];
@@ -51,6 +69,7 @@ export interface UserBusiness {
   commerceSpecialist: string;
   missionSteps: { step: MissionStep; completed: boolean; completedAt?: string }[];
   productIds: string[];
+  audienceTargeting?: AudienceTargeting;
   createdAt: string;
 }
 
@@ -98,6 +117,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone: string;
+  address: string;
   avatar: string;
   kycStatus: "verified" | "pending" | "not_started";
   documents: { id: string; name: string; status: string; uploadedAt: string }[];
@@ -105,6 +125,7 @@ export interface UserProfile {
     emailNotifications: boolean;
     pushNotifications: boolean;
     currency: string;
+    language: string;
   };
 }
 
@@ -131,6 +152,7 @@ export interface AppData {
   transactions: Transaction[];
   notifications: Notification[];
   customers: Customer[];
+  reviews: Review[];
   profile: UserProfile;
   dashboardStats: DashboardStats;
   intelligence: IntelligenceInsight;

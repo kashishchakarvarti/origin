@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import type { Opportunity } from "@/lib/types";
+import { useLanguage } from "@/providers/language-provider";
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -16,6 +17,8 @@ interface OpportunityCardProps {
 }
 
 export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCardProps) {
+  const { t, tn } = useLanguage();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -29,15 +32,15 @@ export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCar
             src={opportunity.image}
             category={opportunity.category}
             seed={opportunity.id}
-            alt={opportunity.name}
+            alt={tn(opportunity.name)}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
           <div className="absolute top-4 left-4 flex gap-2">
-            <Badge variant="outline">{opportunity.country}</Badge>
-            <Badge variant="gold">{opportunity.category}</Badge>
+            <Badge variant="outline">{tn(opportunity.country)}</Badge>
+            <Badge variant="gold">{tn(opportunity.category)}</Badge>
           </div>
         </div>
       </Link>
@@ -45,22 +48,29 @@ export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCar
       <div className="p-6 space-y-4">
         <Link href={`/opportunities/${opportunity.id}`}>
           <h3 className="text-lg font-semibold text-white group-hover:text-gold transition-colors">
-            {opportunity.name}
+            {tn(opportunity.name)}
           </h3>
         </Link>
 
         <div className="grid grid-cols-2 gap-3">
-          <Metric label="Launch Score" value={`${opportunity.launchScore}`} highlight />
-          <Metric label="CREST Price" value={formatINR(opportunity.crestPrice)} />
-          <Metric label="Selling Price" value={formatUSD(opportunity.recommendedSellingPrice)} />
-          <Metric label="Monthly Orders" value={formatNumber(opportunity.monthlyOrders)} />
-          <Metric label="Min. Launch" value={formatINR(opportunity.minimumLaunchCost)} />
-          <Metric label="Capacity" value={`${opportunity.availableCapacity}%`} />
+          <Metric label={t("opp.launchScore")} value={`${opportunity.launchScore}`} highlight />
+          <Metric label={t("opp.crestPrice")} value={formatINR(opportunity.crestPrice)} />
+          <Metric label={t("opp.sellingPrice")} value={formatUSD(opportunity.recommendedSellingPrice)} />
+          <Metric label={t("opp.monthlyOrders")} value={formatNumber(opportunity.monthlyOrders)} />
+          <Metric label={t("opp.minLaunch")} value={formatINR(opportunity.minimumLaunchCost)} />
+          <Metric label={t("opp.capacity")} value={`${opportunity.availableCapacity}%`} />
+        </div>
+
+        <div className="rounded-xl border border-gold/15 bg-gold/[0.05] px-3 py-2">
+          <p className="text-[11px] text-white/40 uppercase tracking-wider">{t("opp.entrepreneurs")}</p>
+          <p className="text-sm font-medium text-gold mt-0.5">
+            {formatNumber(opportunity.peopleStarted ?? 0)} {t("opp.started")}
+          </p>
         </div>
 
         <div className="space-y-1">
           <div className="flex justify-between text-xs text-white/40">
-            <span>Available Capacity</span>
+            <span>{t("opp.availableCapacity")}</span>
             <span>{opportunity.availableCapacity}%</span>
           </div>
           <Progress value={opportunity.availableCapacity} className="h-1" />
@@ -73,7 +83,7 @@ export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCar
             onLaunch?.(opportunity.id);
           }}
         >
-          Launch Business
+          {t("common.launch")}
         </Button>
       </div>
     </motion.div>

@@ -13,6 +13,7 @@ import {
   SPECIALIST_LAST,
 } from "../constants";
 import { AVATAR_IMAGE, getCategoryImage } from "../images";
+import type { AudienceTargeting } from "../audience-filters";
 import type {
   AppData,
   Category,
@@ -23,6 +24,7 @@ import type {
   Opportunity,
   Order,
   Product,
+  Review,
   Transaction,
   UserBusiness,
   UserProfile,
@@ -111,6 +113,7 @@ export function generateOpportunities(count: number, products: Product[]): Oppor
       monthlyOrders: range(420, 5200, rand),
       minimumLaunchCost: crestPrice,
       availableCapacity: range(12, 89, rand),
+      peopleStarted: range(48, 2840, rand),
       image: getCategoryImage(category, `opp_${i + 1}`),
       description: `A premium ${category.toLowerCase()} brand optimized for the ${country} market with end-to-end CREST fulfillment.`,
       productsIncluded: selectedProducts,
@@ -277,6 +280,7 @@ export function generateProfile(): UserProfile {
     name: "Kashish",
     email: "kashish@crestorigin.com",
     phone: "+91 98765 43210",
+    address: "42 Residency Road, Bengaluru, Karnataka 560025",
     avatar: AVATAR_IMAGE,
     kycStatus: "verified",
     documents: [
@@ -288,8 +292,73 @@ export function generateProfile(): UserProfile {
       emailNotifications: true,
       pushNotifications: true,
       currency: "INR",
+      language: "en",
     },
   };
+}
+
+const CUSTOMER_REVIEW_TITLES = [
+  "Excellent quality",
+  "Fast shipping",
+  "Worth every rupee",
+  "Exactly as described",
+  "Great everyday product",
+  "Would buy again",
+];
+
+const SELLER_REVIEW_TITLES = [
+  "Strong margins",
+  "Easy to launch",
+  "Reliable fulfillment",
+  "Customers love it",
+  "Solid demand",
+  "Great CREST support",
+];
+
+const CUSTOMER_COMMENTS = [
+  "Product arrived quickly and packaging was premium. Very happy with the quality.",
+  "Looks and feels better than expected. Already recommended it to friends.",
+  "Smooth checkout experience and delivery tracking was clear throughout.",
+  "Great value for the price. Will definitely order again from this brand.",
+  "The materials feel durable and the design is clean. Five stars.",
+];
+
+const SELLER_COMMENTS = [
+  "Launched this opportunity last month — orders started within the first week.",
+  "CREST handled inventory and marketing well. Launch score matched real performance.",
+  "Clear unit economics and strong repeat purchase rate in my market.",
+  "Support team helped optimize pricing. Profitability improved after week two.",
+  "Easy product mix to manage. Capacity filled faster than I expected.",
+];
+
+export function generateReviews(
+  products: Product[],
+  opportunities: Opportunity[]
+): Review[] {
+  const reviews: Review[] = [];
+  const firstNames = ["Alex", "Jordan", "Priya", "Sam", "Mei", "Omar", "Nina", "Leo", "Aisha", "Chris"];
+  const lastInitials = ["S", "K", "P", "R", "M", "T", "L", "G", "W", "H"];
+
+  for (let i = 0; i < 80; i++) {
+    const rand = seededRandom(i * 4517 + 42);
+    const product = pick(products, rand);
+    const opportunity = pick(opportunities, rand);
+    const isCustomer = i % 3 !== 0;
+    reviews.push({
+      id: `rev_${i + 1}`,
+      productId: product.id,
+      opportunityId: opportunity.id,
+      authorName: `${pick(firstNames, rand)} ${pick(lastInitials, rand)}.`,
+      authorType: isCustomer ? "customer" : "seller",
+      rating: range(4, 5, rand),
+      title: pick(isCustomer ? CUSTOMER_REVIEW_TITLES : SELLER_REVIEW_TITLES, rand),
+      comment: pick(isCustomer ? CUSTOMER_COMMENTS : SELLER_COMMENTS, rand),
+      country: pick(COUNTRIES, rand),
+      createdAt: new Date(Date.now() - range(2, 180, rand) * 86400000).toISOString(),
+      helpful: range(3, 96, rand),
+    });
+  }
+  return reviews;
 }
 
 export function generateSeedData(): AppData {
@@ -301,6 +370,7 @@ export function generateSeedData(): AppData {
   const transactions = generateTransactions(200, userBusinesses);
   const customers = generateCustomers(200);
   const notifications = generateNotifications(100, userBusinesses);
+  const reviews = generateReviews(products, opportunities);
 
   return {
     opportunities,
@@ -310,6 +380,7 @@ export function generateSeedData(): AppData {
     transactions,
     notifications,
     customers,
+    reviews,
     profile: generateProfile(),
     dashboardStats: computeDashboardStats(userBusinesses),
     intelligence: INTELLIGENCE_INSIGHTS[0],
@@ -353,7 +424,8 @@ export function createCustomBusiness(
   name: string,
   category: Category,
   country: Country,
-  selectedProducts: Product[]
+  selectedProducts: Product[],
+  audienceTargeting?: AudienceTargeting
 ): UserBusiness {
   const totalCost = selectedProducts.reduce((s, p) => s + p.crestPrice, 0);
   const avgScore = Math.round(
@@ -377,6 +449,7 @@ export function createCustomBusiness(
     commerceSpecialist: generateSpecialist(Date.now() % 20),
     missionSteps: generateMissionSteps(1),
     productIds: selectedProducts.map((p) => p.id),
+    audienceTargeting,
     createdAt: new Date().toISOString(),
   };
 }

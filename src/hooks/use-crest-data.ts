@@ -72,3 +72,10 @@ export function useOrders(businessId?: string) {
     queryFn: () => crestStore.getOrders(businessId),
   });
 }
+
+export function useReviews(filters?: { opportunityId?: string; productIds?: string[] }) {
+  return useQuery({
+    queryKey: ["crest", "reviews", filters],
+    queryFn: () => crestStore.getReviews(filters),
+  });
+}

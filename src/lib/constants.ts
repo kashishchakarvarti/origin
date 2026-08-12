@@ -50,12 +50,13 @@ export const MISSION_STEPS = [
 ] as const;
 
 export const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
-  { href: "/opportunities", label: "Business Opportunities", icon: "Sparkles" },
-  { href: "/businesses", label: "My Businesses", icon: "Building2" },
-  { href: "/mission-control", label: "Mission Control", icon: "Rocket" },
-  { href: "/payments", label: "Payments", icon: "Wallet" },
-  { href: "/profile", label: "Profile", icon: "User" },
+  { href: "/dashboard", labelKey: "nav.dashboard", icon: "LayoutDashboard" },
+  { href: "/opportunities", labelKey: "nav.opportunities", icon: "Sparkles" },
+  { href: "/businesses", labelKey: "nav.businesses", icon: "Building2" },
+  { href: "/mission-control", labelKey: "nav.mission", icon: "Rocket" },
+  { href: "/payments", labelKey: "nav.payments", icon: "Wallet" },
+  { href: "/profile", labelKey: "nav.profile", icon: "User" },
+  { href: "/support", labelKey: "nav.support", icon: "Headphones" },
 ] as const;
 
 export const BRAND_PREFIXES = [

@@ -5,14 +5,16 @@ import { useUserBusinesses } from "@/hooks/use-crest-data";
 import { MissionTimeline } from "@/components/mission-control/mission-timeline";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/providers/language-provider";
 
 export default function MissionControlPage() {
+  const { t } = useLanguage();
   const { data: businesses = [] } = useUserBusinesses();
 
   return (
     <div className="space-y-8 max-w-4xl">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-semibold tracking-tight">Mission Control</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("mission.title")}</h1>
         <p className="text-white/50 mt-2">Track your business launch progress</p>
       </motion.div>
 

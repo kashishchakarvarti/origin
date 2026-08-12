@@ -18,8 +18,10 @@ import { crestStore } from "@/lib/data/store";
 import { formatINR } from "@/lib/format";
 import { useCrestData, useTransactions } from "@/hooks/use-crest-data";
 import { useToast } from "@/providers/toast-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 export default function PaymentsPage() {
+  const { t } = useLanguage();
   const { data: appData } = useCrestData();
   const { data: transactions = [] } = useTransactions();
   const [showWithdraw, setShowWithdraw] = useState(false);
@@ -53,7 +55,7 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-8 max-w-4xl">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-semibold tracking-tight">Payments</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("pay.title")}</h1>
         <p className="text-white/50 mt-2">Manage your earnings and withdrawals</p>
       </motion.div>
 

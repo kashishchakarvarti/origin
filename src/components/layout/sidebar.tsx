@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import {
   Building2,
+  Headphones,
   LayoutDashboard,
   Rocket,
   Sparkles,
@@ -13,6 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/constants";
+import { useLanguage } from "@/providers/language-provider";
 
 const iconMap = {
   LayoutDashboard,
@@ -21,10 +23,12 @@ const iconMap = {
   Rocket,
   Wallet,
   User,
+  Headphones,
 };
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/[0.06] bg-[#050505]/80 backdrop-blur-2xl">
@@ -63,7 +67,7 @@ export function Sidebar() {
                   />
                 )}
                 <Icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <span className="truncate">{t(item.labelKey)}</span>
               </motion.div>
             </Link>
           );
@@ -78,7 +82,7 @@ export function Sidebar() {
             className="flex items-center justify-center gap-2 rounded-xl bg-gold/10 border border-gold/20 px-4 py-3 text-sm font-medium text-gold cursor-pointer transition-colors hover:bg-gold/15"
           >
             <Sparkles className="h-4 w-4" />
-            Build Your Business
+            {t("nav.build")}
           </motion.div>
         </Link>
       </div>

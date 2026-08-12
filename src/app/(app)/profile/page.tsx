@@ -2,46 +2,67 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { FileText, LogOut, Shield, User } from "lucide-react";
+import { FileText, LogOut, MapPin, Phone, Shield, User } from "lucide-react";
 import { CrestImage } from "@/components/ui/crest-image";
 import { AVATAR_IMAGE } from "@/lib/images";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { crestStore } from "@/lib/data/store";
+import { type LanguageCode } from "@/lib/i18n";
+import { maskAddress, maskEmail, maskPhone } from "@/lib/mask";
 import { useCrestData } from "@/hooks/use-crest-data";
 import { useAuth } from "@/providers/auth-provider";
+import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 
 export default function ProfilePage() {
   const { data: appData } = useCrestData();
   const { logout } = useAuth();
+  const { language, setLanguage, languages, t } = useLanguage();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const profile = appData?.profile;
 
   const [name, setName] = useState(profile?.name ?? "");
-  const [email, setEmail] = useState(profile?.email ?? "");
-  const [phone, setPhone] = useState(profile?.phone ?? "");
   const [emailNotif, setEmailNotif] = useState(profile?.settings.emailNotifications ?? true);
   const [pushNotif, setPushNotif] = useState(profile?.settings.pushNotifications ?? true);
 
+  useEffect(() => {
+    if (profile?.name) setName(profile.name);
+    if (profile?.settings) {
+      setEmailNotif(profile.settings.emailNotifications);
+      setPushNotif(profile.settings.pushNotifications);
+    }
+  }, [profile]);
+
   const handleSave = () => {
-    crestStore.updateProfile({ name, email, phone });
+    crestStore.updateProfile({ name });
     queryClient.invalidateQueries({ queryKey: ["crest"] });
-    toast({ title: "Profile updated", variant: "success" });
+    toast({ title: t("profile.updated"), variant: "success" });
   };
 
   const handleSettingsSave = () => {
-    crestStore.updateSettings({ emailNotifications: emailNotif, pushNotifications: pushNotif });
+    crestStore.updateSettings({
+      emailNotifications: emailNotif,
+      pushNotifications: pushNotif,
+      language,
+    });
     queryClient.invalidateQueries({ queryKey: ["crest"] });
-    toast({ title: "Settings saved", variant: "success" });
+    toast({ title: t("profile.settingsSaved"), variant: "success" });
   };
 
   const handleLogout = () => {
@@ -52,7 +73,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8 max-w-3xl">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("profile.title")}</h1>
       </motion.div>
 
       <div className="flex items-center gap-4">
@@ -61,37 +82,53 @@ export default function ProfilePage() {
         </div>
         <div>
           <p className="text-lg font-semibold">{profile?.name}</p>
-          <p className="text-sm text-white/50">{profile?.email}</p>
+          <p className="text-sm text-white/50 font-mono tracking-wide">
+            {maskEmail(profile?.email)}
+          </p>
         </div>
-        <Badge variant="live" className="ml-auto">KYC Verified</Badge>
+        <Badge variant="live" className="ml-auto">{t("profile.verified")}</Badge>
       </div>
 
       <Tabs defaultValue="personal">
         <TabsList>
-          <TabsTrigger value="personal"><User className="h-3.5 w-3.5 mr-1.5" />Personal</TabsTrigger>
-          <TabsTrigger value="documents"><FileText className="h-3.5 w-3.5 mr-1.5" />Documents</TabsTrigger>
-          <TabsTrigger value="kyc"><Shield className="h-3.5 w-3.5 mr-1.5" />KYC</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="personal"><User className="h-3.5 w-3.5 mr-1.5" />{t("profile.personal")}</TabsTrigger>
+          <TabsTrigger value="documents"><FileText className="h-3.5 w-3.5 mr-1.5" />{t("profile.documents")}</TabsTrigger>
+          <TabsTrigger value="kyc"><Shield className="h-3.5 w-3.5 mr-1.5" />{t("profile.kyc")}</TabsTrigger>
+          <TabsTrigger value="settings">{t("profile.settings")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal" className="space-y-4 mt-4">
           <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-4">
             <div className="space-y-2">
-              <Label>Name</Label>
+              <Label>{t("profile.name")}</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>Phone</Label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-            <Button onClick={handleSave}>Save Changes</Button>
+
+            <MaskedField
+              label={t("profile.email")}
+              value={maskEmail(profile?.email)}
+              hint={t("profile.masked")}
+            />
+            <MaskedField
+              label={t("profile.phone")}
+              value={maskPhone(profile?.phone)}
+              hint={t("profile.masked")}
+              icon={<Phone className="h-3.5 w-3.5 text-white/30" />}
+            />
+            <MaskedField
+              label={t("profile.address")}
+              value={maskAddress(profile?.address)}
+              hint={t("profile.masked")}
+              icon={<MapPin className="h-3.5 w-3.5 text-white/30" />}
+            />
+
+            <p className="text-xs text-white/35 leading-relaxed">
+              {t("profile.privacyNote")}
+            </p>
+            <Button onClick={handleSave}>{t("common.save")}</Button>
           </div>
           <div className="rounded-2xl border border-white/[0.06] bg-card p-6">
-            <p className="text-sm text-white/50 mb-2">Businesses</p>
+            <p className="text-sm text-white/50 mb-2">{t("profile.businesses")}</p>
             <p className="text-2xl font-semibold">{appData?.dashboardStats.businesses ?? 0}</p>
           </div>
         </TabsContent>
@@ -118,43 +155,84 @@ export default function ProfilePage() {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
               <Shield className="h-8 w-8 text-emerald-400" />
             </div>
-            <h3 className="text-lg font-semibold">Identity Verified</h3>
-            <p className="text-sm text-white/50">Your KYC verification is complete. You have full access to all CREST OS features.</p>
+            <h3 className="text-lg font-semibold">{t("profile.identity")}</h3>
+            <p className="text-sm text-white/50">{t("profile.identityDesc")}</p>
           </div>
         </TabsContent>
 
         <TabsContent value="settings" className="mt-4 space-y-4">
           <div className="rounded-2xl border border-white/[0.06] bg-card p-6 space-y-6">
+            <div className="space-y-2">
+              <Label>{t("common.language")}</Label>
+              <Select
+                value={language}
+                onValueChange={(v) => setLanguage(v as LanguageCode)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.native} · {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Email Notifications</p>
-                <p className="text-xs text-white/40">Receive updates via email</p>
+                <p className="text-sm font-medium">{t("profile.emailNotif")}</p>
+                <p className="text-xs text-white/40">{t("profile.emailNotifDesc")}</p>
               </div>
               <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Push Notifications</p>
-                <p className="text-xs text-white/40">Real-time alerts</p>
+                <p className="text-sm font-medium">{t("profile.pushNotif")}</p>
+                <p className="text-xs text-white/40">{t("profile.pushNotifDesc")}</p>
               </div>
               <Switch checked={pushNotif} onCheckedChange={setPushNotif} />
             </div>
-            <Button onClick={handleSettingsSave}>Save Settings</Button>
+            <Button onClick={handleSettingsSave}>{t("profile.saveSettings")}</Button>
           </div>
 
           <div className="rounded-2xl border border-white/[0.06] bg-card p-6">
-            <h3 className="font-medium mb-2">Support</h3>
-            <p className="text-sm text-white/50 mb-4">Need help? Our team is available 24/7.</p>
-            <Button variant="secondary" onClick={() => toast({ title: "Support ticket created", description: "We'll respond within 2 hours." })}>
-              Contact Support
+            <h3 className="font-medium mb-2">{t("support.title")}</h3>
+            <p className="text-sm text-white/50 mb-4">{t("support.available")}</p>
+            <Button variant="secondary" onClick={() => router.push("/support")}>
+              {t("profile.openSupport")}
             </Button>
           </div>
 
           <Button variant="destructive" onClick={handleLogout} className="w-full">
-            <LogOut className="h-4 w-4" /> Logout
+            <LogOut className="h-4 w-4" /> {t("profile.logout")}
           </Button>
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function MaskedField({
+  label,
+  value,
+  hint,
+  icon,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  icon?: ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
+        {icon}
+        <span className="flex-1 text-sm font-mono tracking-wide text-white/70">{value}</span>
+        <Badge variant="outline" className="text-[10px] shrink-0">{hint}</Badge>
+      </div>
     </div>
   );
 }

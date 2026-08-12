@@ -1,10 +1,12 @@
 "use client";
 
 import type { AppData, AuthState, Category, Country, Notification, Opportunity, Product, UserBusiness } from "../types";
+import type { AudienceTargeting } from "../audience-filters";
+import { normalizeAudienceTargeting } from "../audience-filters";
 import { DEMO_CREDENTIALS } from "../constants";
 import { createBusinessFromOpportunity, createCustomBusiness, generateSeedData } from "./generator";
 
-const STORAGE_KEY = "crest_os_data_v4";
+const STORAGE_KEY = "crest_os_data_v5";
 const AUTH_KEY = "crest_os_auth";
 const DEMO_KEY = "crest_os_demo";
 
@@ -188,15 +190,21 @@ export const crestStore = {
     category: Category,
     country: Country,
     selectedProductIds: string[],
-    name?: string
+    name: string,
+    audienceTargeting?: AudienceTargeting
   ): UserBusiness | null {
     const data = loadData();
+    const trimmedName = name.trim();
+    if (!trimmedName) return null;
     const selectedProducts = data.products.filter((p) => selectedProductIds.includes(p.id));
     if (selectedProducts.length === 0) return null;
-    const businessName =
-      name ||
-      `${category}${country} — ${selectedProducts.length} Products`;
-    const business = createCustomBusiness(businessName, category, country, selectedProducts);
+    const business = createCustomBusiness(
+      trimmedName,
+      category,
+      country,
+      selectedProducts,
+      audienceTargeting ? normalizeAudienceTargeting(audienceTargeting) : undefined
+    );
     business.status = "live";
     business.missionSteps = business.missionSteps.map((s, i) => ({
       ...s,
@@ -263,6 +271,19 @@ export const crestStore = {
     });
     saveData(data);
     return true;
+  },
+
+  getReviews(filters?: { opportunityId?: string; productIds?: string[] }) {
+    const data = loadData();
+    let reviews = data.reviews ?? [];
+    if (filters?.opportunityId) {
+      reviews = reviews.filter((r) => r.opportunityId === filters.opportunityId);
+    }
+    if (filters?.productIds?.length) {
+      const ids = new Set(filters.productIds);
+      reviews = reviews.filter((r) => r.productId && ids.has(r.productId));
+    }
+    return reviews;
   },
 
   updateProfile(updates: Partial<AppData["profile"]>) {

@@ -5,19 +5,21 @@ import { BusinessCard } from "@/components/businesses/business-card";
 import { useUserBusinesses } from "@/hooks/use-crest-data";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/providers/language-provider";
 
 export default function MyBusinessesPage() {
   const { data: businesses = [], isLoading } = useUserBusinesses();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8 max-w-7xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">My Businesses</h1>
-          <p className="text-white/50 mt-2">{businesses.length} active businesses</p>
+          <h1 className="text-3xl font-semibold tracking-tight">{t("biz.title")}</h1>
+          <p className="text-white/50 mt-2">{t("biz.subtitle")}</p>
         </div>
         <Link href="/opportunities">
-          <Button>Launch New Business</Button>
+          <Button>{t("common.launch")}</Button>
         </Link>
       </div>
 

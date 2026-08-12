@@ -20,6 +20,7 @@ import { INCLUDED_SERVICES } from "@/lib/constants";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import type { Opportunity, Product } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/providers/language-provider";
 
 interface LaunchBusinessDialogProps {
   opportunity: Opportunity | null;
@@ -37,6 +38,7 @@ export function LaunchBusinessDialog({
   onLaunch,
 }: LaunchBusinessDialogProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { t, tn } = useLanguage();
 
   useEffect(() => {
     if (open && products.length > 0) {
@@ -80,20 +82,20 @@ export function LaunchBusinessDialog({
             src={opportunity.image}
             category={opportunity.category}
             seed={opportunity.id}
-            alt={opportunity.name}
+            alt={tn(opportunity.name)}
             fill
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
           <div className="absolute bottom-4 left-6 right-6">
             <div className="flex gap-2 mb-2">
-              <Badge variant="outline">{opportunity.country}</Badge>
-              <Badge variant="gold">{opportunity.category}</Badge>
+              <Badge variant="outline">{tn(opportunity.country)}</Badge>
+              <Badge variant="gold">{tn(opportunity.category)}</Badge>
             </div>
             <DialogHeader className="text-left space-y-1">
-              <DialogTitle className="text-2xl">{opportunity.name}</DialogTitle>
+              <DialogTitle className="text-2xl">{tn(opportunity.name)}</DialogTitle>
               <DialogDescription className="text-white/50">
-                Review products and launch details before going live
+                {t("opp.subtitle")}
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -103,7 +105,7 @@ export function LaunchBusinessDialog({
           <ScrollArea className="md:col-span-3 max-h-[calc(90vh-10rem)] border-r border-white/[0.06]">
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-white/70">Products Included</h3>
+                <h3 className="text-sm font-medium text-white/70">{t("opp.productsIncluded")}</h3>
                 <span className="text-xs text-white/40">
                   {selectedIds.length} of {products.length} selected
                 </span>
@@ -131,25 +133,25 @@ export function LaunchBusinessDialog({
                           src={product.image}
                           category={product.category}
                           seed={product.id}
-                          alt={product.name}
+                          alt={tn(product.name)}
                           fill
                           className="object-cover"
                           sizes="80px"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{product.name}</p>
+                        <p className="font-medium text-sm truncate">{tn(product.name)}</p>
                         <div className="grid grid-cols-3 gap-2 mt-2 text-xs">
                           <div>
-                            <p className="text-white/40">CREST Price</p>
+                            <p className="text-white/40">{t("opp.crestPrice")}</p>
                             <p className="text-white/80 mt-0.5">{formatINR(product.crestPrice)}</p>
                           </div>
                           <div>
-                            <p className="text-white/40">Launch Score</p>
+                            <p className="text-white/40">{t("opp.launchScore")}</p>
                             <p className="text-gold mt-0.5">{product.launchScore}</p>
                           </div>
                           <div>
-                            <p className="text-white/40">Orders/mo</p>
+                            <p className="text-white/40">{t("opp.monthlyOrders")}</p>
                             <p className="text-white/80 mt-0.5">{formatNumber(product.monthlyOrders)}</p>
                           </div>
                         </div>
@@ -158,7 +160,7 @@ export function LaunchBusinessDialog({
                         <Checkbox
                           checked={checked}
                           onCheckedChange={() => toggleProduct(product.id)}
-                          aria-label={`Include ${product.name}`}
+                          aria-label={`Include ${tn(product.name)}`}
                         />
                       </div>
                     </motion.div>
@@ -168,13 +170,13 @@ export function LaunchBusinessDialog({
 
               <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
                 <h4 className="text-xs font-medium text-white/50 uppercase tracking-wider">
-                  Included Services
+                  {t("opp.services")}
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {INCLUDED_SERVICES.map((service) => (
                     <div key={service} className="flex items-center gap-2 text-xs text-white/70">
                       <Check className="h-3 w-3 text-gold shrink-0" />
-                      {service}
+                      {tn(service)}
                     </div>
                   ))}
                 </div>
@@ -184,7 +186,7 @@ export function LaunchBusinessDialog({
 
           <div className="md:col-span-2 p-6 space-y-6 bg-white/[0.02]">
             <div>
-              <h3 className="text-sm font-medium text-white/50 mb-1">Commerce Specialist</h3>
+              <h3 className="text-sm font-medium text-white/50 mb-1">{t("opp.specialist")}</h3>
               <p className="text-lg font-semibold">{opportunity.commerceSpecialist}</p>
               <p className="text-xs text-white/40 mt-1">
                 Dedicated support for {opportunity.country} market

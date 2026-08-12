@@ -18,6 +18,7 @@ import {
 import { CATEGORIES, COUNTRIES } from "@/lib/constants";
 import { crestStore } from "@/lib/data/store";
 import { useOpportunities } from "@/hooks/use-crest-data";
+import { useLanguage } from "@/providers/language-provider";
 import { useToast } from "@/providers/toast-provider";
 import type { Opportunity } from "@/lib/types";
 
@@ -30,6 +31,7 @@ export default function OpportunitiesPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { toast } = useToast();
+  const { t, tn } = useLanguage();
 
   const launchProducts = useMemo(
     () => (launchTarget ? crestStore.getOpportunityProducts(launchTarget.id) : []),
@@ -47,8 +49,8 @@ export default function OpportunitiesPage() {
     if (business) {
       queryClient.invalidateQueries({ queryKey: ["crest"] });
       toast({
-        title: "Business Launched",
-        description: `${business.name} is now live in ${business.country}.`,
+        title: t("opp.launched"),
+        description: `${tn(business.name)} ${t("opp.nowLive")}`,
         variant: "success",
       });
       setLaunchTarget(null);
@@ -59,15 +61,15 @@ export default function OpportunitiesPage() {
   return (
     <div className="space-y-8 max-w-7xl">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-3xl font-semibold tracking-tight">Business Opportunities</h1>
-        <p className="text-white/50 mt-2">Curated global commerce businesses ready to launch</p>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("opp.title")}</h1>
+        <p className="text-white/50 mt-2">{t("opp.subtitle")}</p>
       </motion.div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
           <Input
-            placeholder="Search businesses..."
+            placeholder={t("opp.search")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -75,23 +77,23 @@ export default function OpportunitiesPage() {
         </div>
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Category" />
+            <SelectValue placeholder={t("common.category")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">{t("common.all")}</SelectItem>
             {CATEGORIES.map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
+              <SelectItem key={c} value={c}>{tn(c)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={country} onValueChange={setCountry}>
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Country" />
+            <SelectValue placeholder={t("common.country")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Countries</SelectItem>
+            <SelectItem value="all">{t("common.all")}</SelectItem>
             {COUNTRIES.map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
+              <SelectItem key={c} value={c}>{tn(c)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
