@@ -107,7 +107,7 @@ export function LaunchBusinessDialog({
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-white/70">{t("opp.productsIncluded")}</h3>
                 <span className="text-xs text-white/40">
-                  {selectedIds.length} of {products.length} selected
+                  {t("launch.selectedCount", { n: selectedIds.length, m: products.length })}
                 </span>
               </div>
 
@@ -160,7 +160,7 @@ export function LaunchBusinessDialog({
                         <Checkbox
                           checked={checked}
                           onCheckedChange={() => toggleProduct(product.id)}
-                          aria-label={`Include ${tn(product.name)}`}
+                          aria-label={t("launch.includeProduct", { name: tn(product.name) })}
                         />
                       </div>
                     </motion.div>
@@ -189,22 +189,22 @@ export function LaunchBusinessDialog({
               <h3 className="text-sm font-medium text-white/50 mb-1">{t("opp.specialist")}</h3>
               <p className="text-lg font-semibold">{opportunity.commerceSpecialist}</p>
               <p className="text-xs text-white/40 mt-1">
-                Dedicated support for {opportunity.country} market
+                {t("opp.specialistMarket", { country: tn(opportunity.country) })}
               </p>
             </div>
 
             <div className="space-y-3">
-              <SummaryRow label="Launch Cost" value={formatINR(launchCost)} highlight />
-              <SummaryRow label="Launch Score" value={String(launchScore)} highlight />
-              <SummaryRow label="Selling Price" value={formatUSD(opportunity.recommendedSellingPrice)} />
-              <SummaryRow label="Est. Monthly Orders" value={formatNumber(monthlyOrders)} />
-              <SummaryRow label="Min. Launch" value={formatINR(opportunity.minimumLaunchCost)} />
-              <SummaryRow label="Capacity" value={`${opportunity.availableCapacity}%`} />
+              <SummaryRow label={t("build.launchCost")} value={formatINR(launchCost)} highlight />
+              <SummaryRow label={t("build.launchScore")} value={String(launchScore)} highlight />
+              <SummaryRow label={t("opp.sellingPrice")} value={formatUSD(opportunity.recommendedSellingPrice)} />
+              <SummaryRow label={t("launch.estMonthlyOrders")} value={formatNumber(monthlyOrders)} />
+              <SummaryRow label={t("opp.minLaunch")} value={formatINR(opportunity.minimumLaunchCost)} />
+              <SummaryRow label={t("opp.capacity")} value={`${opportunity.availableCapacity}%`} />
             </div>
 
             <div className="space-y-1">
               <div className="flex justify-between text-xs text-white/40">
-                <span>Available Capacity</span>
+                <span>{t("opp.availableCapacity")}</span>
                 <span>{opportunity.availableCapacity}%</span>
               </div>
               <Progress value={opportunity.availableCapacity} className="h-1.5" />
@@ -219,11 +219,14 @@ export function LaunchBusinessDialog({
               onClick={handleLaunch}
             >
               <Rocket className="h-4 w-4" />
-              Launch with {selectedIds.length} Product{selectedIds.length !== 1 ? "s" : ""}
+              {t(
+                selectedIds.length === 1 ? "launch.launchWithProducts" : "launch.launchWithProducts_plural",
+                { n: selectedIds.length }
+              )}
             </Button>
 
             {selectedIds.length === 0 && (
-              <p className="text-xs text-red-400/80 text-center">Select at least one product</p>
+              <p className="text-xs text-red-400/80 text-center">{t("launch.selectOneProduct")}</p>
             )}
           </div>
         </div>

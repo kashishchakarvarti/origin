@@ -9,8 +9,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { LaunchBusinessDialog } from "@/components/opportunities/launch-business-dialog";
 import { ReviewsPanel } from "@/components/reviews/reviews-panel";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { OnMediaChip } from "@/components/ui/on-media-chip";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { resolveOpportunityStatus } from "@/lib/crest-status";
 import { crestStore } from "@/lib/data/store";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import { useLanguage } from "@/providers/language-provider";
@@ -26,6 +28,7 @@ export default function OpportunityDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { t, tn } = useLanguage();
+  const status = opportunity ? resolveOpportunityStatus(opportunity) : null;
 
   const launchProducts = useMemo(
     () => (opportunity ? crestStore.getOpportunityProducts(opportunity.id) : []),
@@ -72,9 +75,10 @@ export default function OpportunityDetailPage() {
         <CrestImage src={opportunity.image} category={opportunity.category} seed={opportunity.id} alt={tn(opportunity.name)} fill className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
         <div className="absolute bottom-6 left-6 right-6">
-          <div className="flex gap-2 mb-3">
-            <Badge variant="outline">{tn(opportunity.country)}</Badge>
-            <Badge variant="gold">{tn(opportunity.category)}</Badge>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {status && <StatusBadge status={status} onMedia />}
+            <OnMediaChip variant="country">{tn(opportunity.country)}</OnMediaChip>
+            <OnMediaChip variant="category">{tn(opportunity.category)}</OnMediaChip>
           </div>
           <h1 className="text-3xl md:text-4xl font-semibold">{tn(opportunity.name)}</h1>
         </div>

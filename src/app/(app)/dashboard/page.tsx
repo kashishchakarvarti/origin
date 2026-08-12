@@ -1,14 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useCrestData } from "@/hooks/use-crest-data";
+import { useCrestData, useOpportunities } from "@/hooks/use-crest-data";
 import { useAuth } from "@/providers/auth-provider";
 import { useLanguage } from "@/providers/language-provider";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { IntelligenceCard } from "@/components/dashboard/intelligence-card";
+import { LiveOpportunities } from "@/components/dashboard/live-opportunities";
 
 export default function DashboardPage() {
   const { data, isLoading } = useCrestData();
+  const { data: opportunities = [] } = useOpportunities();
   const { name } = useAuth();
   const { t } = useLanguage();
   const stats = data?.dashboardStats;
@@ -63,6 +65,8 @@ export default function DashboardPage() {
       </div>
 
       {intelligence && <IntelligenceCard insight={intelligence} />}
+
+      <LiveOpportunities opportunities={opportunities} />
     </div>
   );
 }

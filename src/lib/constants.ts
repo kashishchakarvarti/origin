@@ -49,6 +49,18 @@ export const MISSION_STEPS = [
   "Expansion Ready",
 ] as const;
 
+/** i18n keys for mission timeline steps */
+export const MISSION_STEP_KEYS: Record<(typeof MISSION_STEPS)[number], string> = {
+  "Business Created": "mission.step.created",
+  "Inventory Reserved": "mission.step.inventory",
+  "Quality Inspection": "mission.step.quality",
+  "Brand Created": "mission.step.brand",
+  "Marketplace Live": "mission.step.marketplace",
+  "First Order": "mission.step.firstOrder",
+  Growing: "mission.step.growing",
+  "Expansion Ready": "mission.step.expansion",
+};
+
 export const NAV_ITEMS = [
   { href: "/dashboard", labelKey: "nav.dashboard", icon: "LayoutDashboard" },
   { href: "/opportunities", labelKey: "nav.opportunities", icon: "Sparkles" },
@@ -98,28 +110,58 @@ export const SPECIALIST_LAST = [
 ];
 
 export const INTELLIGENCE_INSIGHTS = [
-  { insight: "Demand for Home products is increasing in the USA.", action: "Launch another Home business.", confidence: 96 },
-  { insight: "Beauty category showing 34% growth in UAE.", action: "Expand your Beauty portfolio.", confidence: 91 },
-  { insight: "Pet products outperforming in Canada this quarter.", action: "Consider a Pet business launch.", confidence: 88 },
-  { insight: "Kitchen essentials trending in Germany.", action: "Launch a Kitchen-focused brand.", confidence: 94 },
-  { insight: "Fitness accessories demand spike in Australia.", action: "Add Fitness products to portfolio.", confidence: 87 },
+  {
+    id: "homeUsa",
+    insight: "Demand for Home products is rising in the USA.",
+    action: "Review Home opportunities for launch.",
+    confidence: 96,
+    status: "high_potential" as const,
+  },
+  {
+    id: "beautyUae",
+    insight: "Beauty category up 34% in the UAE this period.",
+    action: "Compare Beauty opportunities in UAE.",
+    confidence: 91,
+    status: "emerging" as const,
+  },
+  {
+    id: "petCanada",
+    insight: "Pet products are outperforming in Canada this quarter.",
+    action: "Review Pet opportunities in Canada.",
+    confidence: 88,
+    status: "established" as const,
+  },
+  {
+    id: "kitchenGermany",
+    insight: "Kitchen essentials demand is strong in Germany.",
+    action: "Open Kitchen opportunities for Germany.",
+    confidence: 94,
+    status: "high_potential" as const,
+  },
+  {
+    id: "fitnessAustralia",
+    insight: "Fitness accessories demand increased in Australia.",
+    action: "Add Fitness products to your portfolio.",
+    confidence: 87,
+    status: "new" as const,
+  },
 ];
 
 export const AI_RESPONSES: Record<string, string> = {
-  canada: "Canada shows strong potential for Home and Pet categories. With 23% YoY e-commerce growth and favorable cross-border logistics through CREST, launching a Home business in Toronto or Vancouver markets could yield 85%+ launch scores. Minimum launch cost starts at ₹1,00,000 with projected monthly orders of 1,200+.",
-  recommend: "Based on your portfolio performance, I recommend launching SmartGlow™ in the Beauty category for UAE. Your existing Home businesses show complementary customer overlap, and Beauty has a 91% confidence rating with 2,400+ projected monthly orders.",
-  category: "Your best performing category is Home with ₹18,42,000 revenue across 4 businesses. Pet follows at ₹12,08,000. Consider doubling down on Home in USA and Canada while diversifying into Beauty for UAE expansion.",
-  products: "For your SmartSleep™ business, add the Premium Pillow Set and Organic Diffuser. These products have 92+ launch scores and share 68% customer affinity with your current lineup. Combined launch cost: ₹2,40,000.",
-  default: "I've analyzed your portfolio across 7 countries. Your withdrawable balance of ₹6,82,000 can fund 2 new business launches. Home and Beauty categories show the highest ROI this quarter. Would you like specific recommendations for any country?",
+  canada: "Canada shows solid demand for Home and Pet. E-commerce growth is about 23% YoY, with CREST logistics supporting cross-border fulfillment. Home businesses in Toronto or Vancouver typically score 85+ on launch readiness. Minimum launch cost starts at ₹1,00,000 with projected monthly orders around 1,200.",
+  recommend: "Based on your portfolio, SmartGlow™ in Beauty for UAE is a strong fit. Your Home businesses share customer overlap, and Beauty currently rates about 91% confidence with roughly 2,400 projected monthly orders.",
+  category: "Your top category is Home at ₹18,42,000 across 4 businesses. Pet follows at ₹12,08,000. Home in the USA and Canada remains strong; Beauty in UAE is a useful diversification.",
+  products: "For SmartSleep™, consider the Premium Pillow Set and Organic Diffuser. Both score 92+ and share about 68% customer affinity with your current lineup. Combined launch cost: ₹2,40,000.",
+  default: "I've reviewed your portfolio across 7 countries. Your withdrawable balance of ₹6,82,000 can fund up to 2 new launches. Home and Beauty show the strongest returns this quarter. Ask about a specific country for details.",
 };
 
 export const NOTIFICATION_TEMPLATES = [
   { title: "Business Launched", message: "{name} is now live in {country}." },
   { title: "Inventory Reserved", message: "Stock secured for {name} — {count} units ready." },
-  { title: "Demand Increasing", message: "{category} products trending up 28% in {country}." },
-  { title: "First Order Received", message: "Congratulations! {name} received its first order." },
-  { title: "Price Recommendation", message: "Optimal price for {name} updated to {price}." },
-  { title: "Mission Milestone", message: "{name} reached {step} status." },
+  { title: "Demand Update", message: "{category} demand rose 28% in {country}." },
+  { title: "First Order Received", message: "{name} received its first order." },
+  { title: "Price Recommendation", message: "Suggested price for {name} updated to {price}." },
+  { title: "Mission Milestone", message: "{name} reached {step}." },
   { title: "Revenue Milestone", message: "{name} crossed {amount} in revenue." },
-  { title: "Expansion Ready", message: "{name} qualifies for multi-country expansion." },
+  { title: "Expansion Eligible", message: "{name} qualifies for multi-country expansion." },
 ];

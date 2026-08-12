@@ -43,6 +43,8 @@ export interface Opportunity {
   minimumLaunchCost: number;
   availableCapacity: number;
   peopleStarted: number;
+  /** Optional seed override — otherwise derived from metrics */
+  status?: "new" | "emerging" | "high_potential" | "established";
   image: string;
   description: string;
   productsIncluded: string[];
@@ -78,6 +80,8 @@ export interface Order {
   businessId: string;
   businessName: string;
   customerName: string;
+  customerEmail: string;
+  customerPhone: string;
   amount: number;
   status: "completed" | "processing" | "shipped";
   country: Country;
@@ -126,6 +130,7 @@ export interface UserProfile {
     pushNotifications: boolean;
     currency: string;
     language: string;
+    theme?: "dark" | "light";
   };
 }
 
@@ -139,9 +144,12 @@ export interface DashboardStats {
 }
 
 export interface IntelligenceInsight {
+  /** Stable id used for i18n lookup */
+  id?: string;
   insight: string;
   action: string;
   confidence: number;
+  status?: "new" | "emerging" | "high_potential" | "established";
 }
 
 export interface AppData {

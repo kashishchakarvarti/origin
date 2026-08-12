@@ -14,6 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/constants";
+import { CrestLogo } from "@/components/brand/crest-logo";
 import { useLanguage } from "@/providers/language-provider";
 
 const iconMap = {
@@ -31,16 +32,10 @@ export function Sidebar() {
   const { t } = useLanguage();
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/[0.06] bg-[#050505]/80 backdrop-blur-2xl">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/[0.06] bg-[#050505]/80 backdrop-blur-2xl crest-shell">
       <div className="flex h-16 items-center px-6 border-b border-white/[0.06]">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/10 border border-gold/20">
-            <span className="text-gold font-bold text-sm">C</span>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-white tracking-tight">CREST OS</p>
-            <p className="text-[10px] text-white/40 tracking-widest uppercase">CrestOrigin</p>
-          </div>
+        <Link href="/dashboard">
+          <CrestLogo size="md" />
         </Link>
       </div>
 

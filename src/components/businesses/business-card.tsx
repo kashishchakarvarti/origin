@@ -4,14 +4,22 @@ import { motion } from "framer-motion";
 import { CrestImage } from "@/components/ui/crest-image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { formatINR, formatNumber } from "@/lib/format";
 import type { UserBusiness } from "@/lib/types";
 import { useLanguage } from "@/providers/language-provider";
 
+const STATUS_VARIANT = {
+  live: "live",
+  pending: "pending",
+  growing: "growing",
+} as const;
+
 export function BusinessCard({ business, index }: { business: UserBusiness; index: number }) {
   const { t, tn } = useLanguage();
+  const statusKey = `biz.status.${business.status}` as const;
+  const statusVariant = STATUS_VARIANT[business.status] ?? "live";
 
   return (
     <motion.div
@@ -21,11 +29,22 @@ export function BusinessCard({ business, index }: { business: UserBusiness; inde
       className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-card transition-all duration-500 hover:border-white/[0.12]"
     >
       <div className="relative h-40 overflow-hidden">
-        <CrestImage src={business.image} category={business.category} seed={business.id} alt={tn(business.name)} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="400px" />
-        <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-        <div className="absolute top-4 left-4 flex items-center gap-2">
-          <Badge variant="live">{t("common.live")}</Badge>
-          <Badge variant="outline">{tn(business.country)}</Badge>
+        <CrestImage
+          src={business.image}
+          category={business.category}
+          seed={business.id}
+          alt={tn(business.name)}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          sizes="400px"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-black/45" />
+        <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center gap-2">
+          <OnMediaChip variant={statusVariant} className="uppercase">
+            {t(statusKey)}
+          </OnMediaChip>
+          <OnMediaChip variant="country">{tn(business.country)}</OnMediaChip>
+          <OnMediaChip variant="category">{tn(business.category)}</OnMediaChip>
         </div>
       </div>
 

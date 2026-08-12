@@ -22,8 +22,8 @@ import { crestStore } from "@/lib/data/store";
 interface LanguageContextValue {
   language: LanguageCode;
   setLanguage: (code: LanguageCode) => void;
-  /** Translate UI key, e.g. t("nav.dashboard") */
-  t: (key: string) => string;
+  /** Translate UI key, e.g. t("nav.dashboard") — optional {n} / {name} vars */
+  t: (key: string, vars?: Record<string, string | number>) => string;
   /** Translate product / business / category / country names */
   tn: (name: string | undefined | null) => string;
   /** Legacy object dictionary for older components */
@@ -37,15 +37,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<LanguageCode>("en");
 
   useEffect(() => {
+    // Default language is always English unless user explicitly chose another
     try {
       const stored = crestStore.getData().profile?.settings?.language as LanguageCode | undefined;
-      if (stored && LANGUAGES.some((l) => l.code === stored)) {
-        setLanguageState(stored);
-        document.documentElement.lang = stored;
-        document.documentElement.dir = stored === "ar" ? "rtl" : "ltr";
+      const next =
+        stored && LANGUAGES.some((l) => l.code === stored) ? stored : ("en" as LanguageCode);
+      setLanguageState(next);
+      document.documentElement.lang = next;
+      document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
+      if (!stored) {
+        crestStore.updateSettings({ language: "en" });
       }
     } catch {
-      // ignore
+      setLanguageState("en");
+      document.documentElement.lang = "en";
+      document.documentElement.dir = "ltr";
     }
   }, []);
 
@@ -62,7 +68,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const t = useCallback((key: string) => translateKey(key, language), [language]);
+  const t = useCallback(
+    (key: string, vars?: Record<string, string | number>) => translateKey(key, language, vars),
+    [language]
+  );
   const tn = useCallback((name: string | undefined | null) => translateName(name, language), [language]);
 
   const value = useMemo(

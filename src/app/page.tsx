@@ -5,6 +5,7 @@ import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { WorldMap } from "@/components/landing/world-map";
+import { CrestLogo } from "@/components/brand/crest-logo";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,15 +26,7 @@ export default function LandingPage() {
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 border border-gold/20">
-            <span className="text-gold font-bold">C</span>
-          </div>
-          <div>
-            <p className="text-sm font-semibold tracking-tight">CREST OS</p>
-            <p className="text-[10px] text-white/40 tracking-widest uppercase">CrestOrigin</p>
-          </div>
-        </div>
+        <CrestLogo size="lg" />
         <div className="flex items-center gap-3">
           <Link href="/login">
             <Button variant="ghost" size="sm">

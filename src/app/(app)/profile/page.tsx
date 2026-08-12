@@ -26,16 +26,45 @@ import { maskAddress, maskEmail, maskPhone } from "@/lib/mask";
 import { useCrestData } from "@/hooks/use-crest-data";
 import { useAuth } from "@/providers/auth-provider";
 import { useLanguage } from "@/providers/language-provider";
+import { useTheme, type ThemeMode } from "@/providers/theme-provider";
 import { useToast } from "@/providers/toast-provider";
+
+const DOC_NAME_KEYS: Record<string, string> = {
+  Passport: "profile.doc.passport",
+  "Business License": "profile.doc.license",
+  "Tax Certificate": "profile.doc.tax",
+};
+
+const DOC_STATUS_KEYS: Record<string, string> = {
+  Verified: "profile.docStatus.verified",
+  Pending: "profile.docStatus.pending",
+  Rejected: "profile.docStatus.rejected",
+};
+
+const DATE_LOCALES: Record<string, string> = {
+  en: "en-US",
+  hi: "hi-IN",
+  es: "es-ES",
+  fr: "fr-FR",
+  ar: "ar-AE",
+  de: "de-DE",
+};
 
 export default function ProfilePage() {
   const { data: appData } = useCrestData();
   const { logout } = useAuth();
   const { language, setLanguage, languages, t } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const profile = appData?.profile;
+  const dateLocale = DATE_LOCALES[language] ?? "en-US";
+
+  const translateDocName = (name: string) =>
+    DOC_NAME_KEYS[name] ? t(DOC_NAME_KEYS[name]) : name;
+  const translateDocStatus = (status: string) =>
+    DOC_STATUS_KEYS[status] ? t(DOC_STATUS_KEYS[status]) : status;
 
   const [name, setName] = useState(profile?.name ?? "");
   const [emailNotif, setEmailNotif] = useState(profile?.settings.emailNotifications ?? true);
@@ -78,7 +107,7 @@ export default function ProfilePage() {
 
       <div className="flex items-center gap-4">
         <div className="relative h-16 w-16 rounded-2xl overflow-hidden border border-white/[0.06]">
-          <CrestImage src={profile?.avatar ?? AVATAR_IMAGE} alt="Avatar" fill className="object-cover" />
+          <CrestImage src={profile?.avatar ?? AVATAR_IMAGE} alt={t("profile.avatarAlt")} fill className="object-cover" />
         </div>
         <div>
           <p className="text-lg font-semibold">{profile?.name}</p>
@@ -140,11 +169,13 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-3">
                   <FileText className="h-4 w-4 text-white/40" />
                   <div>
-                    <p className="text-sm font-medium">{doc.name}</p>
-                    <p className="text-xs text-white/40">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                    <p className="text-sm font-medium">{translateDocName(doc.name)}</p>
+                    <p className="text-xs text-white/40">
+                      {new Date(doc.uploadedAt).toLocaleDateString(dateLocale)}
+                    </p>
                   </div>
                 </div>
-                <Badge variant="live">{doc.status}</Badge>
+                <Badge variant="live">{translateDocStatus(doc.status)}</Badge>
               </div>
             ))}
           </div>
@@ -177,6 +208,21 @@ export default function ProfilePage() {
                       {lang.native} · {lang.label}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("profile.theme")}</Label>
+              <Select
+                value={theme}
+                onValueChange={(v) => setTheme(v as ThemeMode)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dark">{t("theme.dark")}</SelectItem>
+                  <SelectItem value="light">{t("theme.light")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { MISSION_STEP_KEYS } from "@/lib/constants";
 import type { MissionStep } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/providers/language-provider";
@@ -12,12 +13,32 @@ interface TimelineStep {
   completedAt?: string;
 }
 
+const DATE_LOCALES: Record<string, string> = {
+  en: "en-US",
+  hi: "hi-IN",
+  es: "es-ES",
+  fr: "fr-FR",
+  ar: "ar-AE",
+  de: "de-DE",
+};
+
 export function MissionTimeline({ steps }: { steps: TimelineStep[] }) {
-  const { tn } = useLanguage();
+  const { t, language } = useLanguage();
+  const dateLocale = DATE_LOCALES[language] ?? "en-US";
+
   return (
     <div className="relative max-w-2xl mx-auto">
       {steps.map((item, index) => {
         const isLast = index === steps.length - 1;
+        const label = t(MISSION_STEP_KEYS[item.step] ?? item.step);
+        const completedDate = item.completedAt
+          ? new Date(item.completedAt).toLocaleDateString(dateLocale, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          : null;
+
         return (
           <motion.div
             key={item.step}
@@ -67,19 +88,15 @@ export function MissionTimeline({ steps }: { steps: TimelineStep[] }) {
                   item.completed ? "text-white" : "text-white/40"
                 )}
               >
-                {tn(item.step)}
+                {label}
               </p>
-              {item.completed && item.completedAt && (
+              {item.completed && completedDate && (
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="text-xs text-white/30 mt-1"
                 >
-                  {new Date(item.completedAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {t("mission.completedOn", { date: completedDate })}
                 </motion.p>
               )}
             </div>

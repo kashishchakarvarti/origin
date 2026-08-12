@@ -2,49 +2,67 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, Send, Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AI_RESPONSES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/providers/language-provider";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
-const SUGGESTIONS = [
-  "Should I launch in Canada?",
-  "Recommend another business.",
-  "Best performing category?",
-  "Which products should I add?",
-];
+const SUGGESTION_KEYS = [
+  "intelligence.suggest.canada",
+  "intelligence.suggest.recommend",
+  "intelligence.suggest.category",
+  "intelligence.suggest.products",
+] as const;
 
 function getAIResponse(input: string): string {
   const lower = input.toLowerCase();
-  if (lower.includes("canada")) return AI_RESPONSES.canada;
-  if (lower.includes("recommend")) return AI_RESPONSES.recommend;
-  if (lower.includes("category") || lower.includes("performing")) return AI_RESPONSES.category;
-  if (lower.includes("product")) return AI_RESPONSES.products;
+  if (lower.includes("canada") || lower.includes("कनाडा") || lower.includes("canadá")) {
+    return AI_RESPONSES.canada;
+  }
+  if (lower.includes("recommend") || lower.includes("suger") || lower.includes("empfehl")) {
+    return AI_RESPONSES.recommend;
+  }
+  if (
+    lower.includes("category") ||
+    lower.includes("performing") ||
+    lower.includes("catégorie") ||
+    lower.includes("categoría")
+  ) {
+    return AI_RESPONSES.category;
+  }
+  if (lower.includes("product") || lower.includes("produit") || lower.includes("producto")) {
+    return AI_RESPONSES.products;
+  }
   return AI_RESPONSES.default;
 }
 
 export function CrestIntelligence() {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hello Kashish. I'm CREST Intelligence — your AI commerce advisor. How can I help you scale today?",
-    },
-  ]);
+  const greeting = t("intelligence.greeting");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
+  const displayMessages = useMemo(
+    () => (messages.length > 0 ? messages : [{ role: "assistant" as const, content: greeting }]),
+    [messages, greeting]
+  );
+
   const sendMessage = (text: string) => {
     if (!text.trim()) return;
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
+    setMessages((prev) => {
+      const base = prev.length > 0 ? prev : [{ role: "assistant" as const, content: greeting }];
+      return [...base, { role: "user", content: text }];
+    });
     setInput("");
     setIsTyping(true);
 
@@ -83,8 +101,8 @@ export function CrestIntelligence() {
                   <MessageCircle className="h-4 w-4 text-gold" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">CREST Intelligence</p>
-                  <p className="text-[10px] text-white/40">AI Commerce Advisor</p>
+                  <p className="text-sm font-semibold">{t("intelligence.brand")}</p>
+                  <p className="text-[10px] text-white/40">{t("intelligence.subtitle")}</p>
                 </div>
               </div>
               <button
@@ -97,7 +115,7 @@ export function CrestIntelligence() {
 
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
-                {messages.map((msg, i) => (
+                {displayMessages.map((msg, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 8 }}
@@ -133,13 +151,13 @@ export function CrestIntelligence() {
 
             <div className="border-t border-white/[0.06] p-3 space-y-2">
               <div className="flex flex-wrap gap-1.5">
-                {SUGGESTIONS.map((s) => (
+                {SUGGESTION_KEYS.map((key) => (
                   <button
-                    key={s}
-                    onClick={() => sendMessage(s)}
+                    key={key}
+                    onClick={() => sendMessage(t(key))}
                     className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 text-[11px] text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors"
                   >
-                    {s}
+                    {t(key)}
                   </button>
                 ))}
               </div>
@@ -153,7 +171,7 @@ export function CrestIntelligence() {
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask anything..."
+                  placeholder={t("intelligence.placeholder")}
                   className="flex-1 h-9"
                 />
                 <Button type="submit" size="icon" className="h-9 w-9 shrink-0">

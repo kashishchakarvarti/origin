@@ -3,9 +3,11 @@
 import { motion } from "framer-motion";
 import { CrestImage } from "@/components/ui/crest-image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { OnMediaChip } from "@/components/ui/on-media-chip";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { resolveOpportunityStatus } from "@/lib/crest-status";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
 import type { Opportunity } from "@/lib/types";
 import { useLanguage } from "@/providers/language-provider";
@@ -18,6 +20,7 @@ interface OpportunityCardProps {
 
 export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCardProps) {
   const { t, tn } = useLanguage();
+  const status = resolveOpportunityStatus(opportunity);
 
   return (
     <motion.div
@@ -37,10 +40,11 @@ export function OpportunityCard({ opportunity, index, onLaunch }: OpportunityCar
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
-          <div className="absolute top-4 left-4 flex gap-2">
-            <Badge variant="outline">{tn(opportunity.country)}</Badge>
-            <Badge variant="gold">{tn(opportunity.category)}</Badge>
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-black/35" />
+          <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
+            <StatusBadge status={status} onMedia />
+            <OnMediaChip variant="country">{tn(opportunity.country)}</OnMediaChip>
+            <OnMediaChip variant="category">{tn(opportunity.category)}</OnMediaChip>
           </div>
         </div>
       </Link>

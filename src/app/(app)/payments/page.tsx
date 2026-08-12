@@ -38,17 +38,21 @@ export default function PaymentsPage() {
   const handleWithdraw = () => {
     const num = parseInt(amount.replace(/,/g, ""), 10);
     if (isNaN(num) || num <= 0) {
-      toast({ title: "Invalid amount", variant: "error" });
+      toast({ title: t("pay.invalidAmount"), variant: "error" });
       return;
     }
     const success = crestStore.withdraw(num);
     if (success) {
       queryClient.invalidateQueries({ queryKey: ["crest"] });
-      toast({ title: "Withdrawal initiated", description: formatINR(num) + " will be transferred.", variant: "success" });
+      toast({
+        title: t("pay.withdrawalInitiated"),
+        description: t("pay.willBeTransferred", { amount: formatINR(num) }),
+        variant: "success",
+      });
       setShowWithdraw(false);
       setAmount("");
     } else {
-      toast({ title: "Insufficient balance", variant: "error" });
+      toast({ title: t("pay.insufficientBalance"), variant: "error" });
     }
   };
 
@@ -56,14 +60,14 @@ export default function PaymentsPage() {
     <div className="space-y-8 max-w-4xl">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <h1 className="text-3xl font-semibold tracking-tight">{t("pay.title")}</h1>
-        <p className="text-white/50 mt-2">Manage your earnings and withdrawals</p>
+        <p className="text-white/50 mt-2">{t("pay.subtitle")}</p>
       </motion.div>
 
       <div className="grid md:grid-cols-3 gap-4">
         {[
-          { label: "Withdrawable", value: stats?.withdrawable ?? 0, highlight: true },
-          { label: "Pending", value: pending },
-          { label: "Lifetime Revenue", value: lifetime },
+          { label: t("pay.withdrawable"), value: stats?.withdrawable ?? 0, highlight: true },
+          { label: t("pay.pending"), value: pending },
+          { label: t("pay.lifetimeRevenue"), value: lifetime },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -82,12 +86,12 @@ export default function PaymentsPage() {
 
       <Button size="lg" onClick={() => setShowWithdraw(true)}>
         <ArrowDownToLine className="h-4 w-4" />
-        Withdraw
+        {t("pay.withdraw")}
       </Button>
 
       <div className="rounded-2xl border border-white/[0.06] bg-card overflow-hidden">
         <div className="px-6 py-4 border-b border-white/[0.06]">
-          <h2 className="font-semibold">Transactions</h2>
+          <h2 className="font-semibold">{t("pay.transactions")}</h2>
         </div>
         {transactions.map((txn) => (
           <div key={txn.id} className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04] last:border-0">
@@ -109,20 +113,24 @@ export default function PaymentsPage() {
       <Dialog open={showWithdraw} onOpenChange={setShowWithdraw}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Withdraw Funds</DialogTitle>
+            <DialogTitle>{t("pay.withdrawFunds")}</DialogTitle>
             <DialogDescription>
-              Available: {formatINR(stats?.withdrawable ?? 0)}
+              {t("pay.available", { amount: formatINR(stats?.withdrawable ?? 0) })}
             </DialogDescription>
           </DialogHeader>
           <Input
-            placeholder="Enter amount"
+            placeholder={t("pay.enterAmount")}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             type="number"
           />
           <div className="flex gap-2">
-            <Button variant="secondary" className="flex-1" onClick={() => setShowWithdraw(false)}>Cancel</Button>
-            <Button className="flex-1" onClick={handleWithdraw}>Confirm Withdrawal</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setShowWithdraw(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button className="flex-1" onClick={handleWithdraw}>
+              {t("pay.confirmWithdrawal")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -8,10 +8,12 @@ import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import { OnMediaChip } from "@/components/ui/on-media-chip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MissionTimeline } from "@/components/mission-control/mission-timeline";
 import { ReviewsPanel } from "@/components/reviews/reviews-panel";
 import { formatINR, formatNumber, formatUSD } from "@/lib/format";
+import { maskEmail, maskPhone } from "@/lib/mask";
 import { estimateAudienceReach, formatAudienceReach, formatFilterLabel, isAiDecidedTargeting, normalizeAudienceTargeting, resolveAudienceTargeting, summarizeTargeting } from "@/lib/audience-filters";
 import { useCrestData, useOrders, useReviews, useUserBusiness } from "@/hooks/use-crest-data";
 import { useLanguage } from "@/providers/language-provider";
@@ -34,11 +36,20 @@ export default function BusinessDetailPage() {
 
   const chartData = useMemo(() => {
     if (!business) return [];
+    const days = [
+      t("common.dayMon"),
+      t("common.dayTue"),
+      t("common.dayWed"),
+      t("common.dayThu"),
+      t("common.dayFri"),
+      t("common.daySat"),
+      t("common.daySun"),
+    ];
     return Array.from({ length: 7 }, (_, i) => ({
-      day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i],
-      revenue: Math.floor(business.revenue / 7 * (0.8 + Math.random() * 0.4)),
+      day: days[i],
+      revenue: Math.floor((business.revenue / 7) * (0.8 + Math.random() * 0.4)),
     }));
-  }, [business]);
+  }, [business, t]);
 
   if (isLoading) return <div className="h-96 rounded-2xl bg-white/[0.04] animate-pulse" />;
 
@@ -59,14 +70,25 @@ export default function BusinessDetailPage() {
 
       <div className="relative h-56 rounded-2xl overflow-hidden">
         <CrestImage src={business.image} category={business.category} seed={business.id} alt={tn(business.name)} fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-        <div className="absolute bottom-6 left-6">
-          <div className="flex gap-2 mb-2">
-            <Badge variant="live">{t("common.live")}</Badge>
-            <Badge variant="outline">{tn(business.country)}</Badge>
-            <Badge variant="gold">{tn(business.category)}</Badge>
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-black/40" />
+        <div className="absolute bottom-6 left-6 right-6">
+          <div className="flex flex-wrap gap-2 mb-2">
+            <OnMediaChip
+              variant={
+                business.status === "pending"
+                  ? "pending"
+                  : business.status === "growing"
+                    ? "growing"
+                    : "live"
+              }
+              className="uppercase"
+            >
+              {t(`biz.status.${business.status}`)}
+            </OnMediaChip>
+            <OnMediaChip variant="country">{tn(business.country)}</OnMediaChip>
+            <OnMediaChip variant="category">{tn(business.category)}</OnMediaChip>
           </div>
-          <h1 className="text-3xl font-semibold">{tn(business.name)}</h1>
+          <h1 className="text-3xl font-semibold text-white drop-shadow-md">{tn(business.name)}</h1>
         </div>
       </div>
 
@@ -142,12 +164,18 @@ export default function BusinessDetailPage() {
               <p className="p-8 text-center text-white/40">{t("biz.noOrders")}</p>
             ) : (
               orders.slice(0, 15).map((order) => (
-                <div key={order.id} className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04] last:border-0">
-                  <div>
+                <div key={order.id} className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/[0.04] last:border-0">
+                  <div className="min-w-0">
                     <p className="text-sm font-medium">{order.customerName}</p>
-                    <p className="text-xs text-white/40">{new Date(order.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs text-white/50 font-mono tracking-wide mt-0.5 truncate">
+                      {maskEmail(order.customerEmail)}
+                    </p>
+                    <p className="text-xs text-white/50 font-mono tracking-wide mt-0.5">
+                      {maskPhone(order.customerPhone)}
+                    </p>
+                    <p className="text-xs text-white/35 mt-1">{new Date(order.createdAt).toLocaleDateString()}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <p className="text-sm font-medium">{formatINR(order.amount)}</p>
                     <Badge variant="outline" className="mt-1">{order.status}</Badge>
                   </div>
@@ -166,7 +194,7 @@ export default function BusinessDetailPage() {
                 </div>
                 <div className="p-4">
                   <p className="font-medium text-sm">{tn(product.name)}</p>
-                  <p className="text-xs text-white/40 mt-1">{formatINR(product.crestPrice)} · Score {product.launchScore}</p>
+                  <p className="text-xs text-white/40 mt-1">{formatINR(product.crestPrice)} · {t("common.score", { n: product.launchScore })}</p>
                 </div>
               </div>
             ))}

@@ -2,12 +2,13 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Check, Globe, Search } from "lucide-react";
+import { Bell, Check, Globe, Moon, Search, Sun } from "lucide-react";
 import { useState } from "react";
 import { crestStore } from "@/lib/data/store";
 import { type LanguageCode } from "@/lib/i18n";
 import { useNotifications } from "@/hooks/use-crest-data";
 import { useLanguage } from "@/providers/language-provider";
+import { useTheme } from "@/providers/theme-provider";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,6 +22,7 @@ import {
 export function Header({ title }: { title?: string }) {
   const { data: notifications = [] } = useNotifications();
   const { language, setLanguage, languages, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
@@ -37,10 +39,10 @@ export function Header({ title }: { title?: string }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/[0.06] bg-[#050505]/80 px-8 backdrop-blur-2xl">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/[0.06] bg-[#050505]/80 px-8 backdrop-blur-2xl crest-shell">
       {title && <h1 className="text-lg font-semibold text-white">{title}</h1>}
 
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-3 ml-auto">
         <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
           <Input
@@ -73,6 +75,16 @@ export function Header({ title }: { title?: string }) {
             </SelectContent>
           </Select>
         </div>
+
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? t("theme.switchLight") : t("theme.switchDark")}
+          title={theme === "dark" ? t("theme.lightMode") : t("theme.darkMode")}
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors"
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </motion.button>
 
         <div className="relative">
           <motion.button

@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { AuthProvider } from "./auth-provider";
 import { DemoModeProvider } from "./demo-mode-provider";
 import { LanguageProvider } from "./language-provider";
+import { ThemeProvider } from "./theme-provider";
 import { ToastProvider } from "./toast-provider";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -22,13 +23,15 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <DemoModeProvider>
-          <LanguageProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </LanguageProvider>
-        </DemoModeProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <DemoModeProvider>
+            <LanguageProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </LanguageProvider>
+          </DemoModeProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -102,18 +102,33 @@ export function generateOpportunities(count: number, products: Product[]): Oppor
       selectedProductObjs.length > 0
         ? selectedProductObjs.reduce((s, p) => s + p.crestPrice, 0)
         : range(75000, 350000, rand);
+    const launchScore = range(78, 98, rand);
+    const peopleStarted = range(48, 2840, rand);
+    const availableCapacity = range(12, 89, rand);
+    const monthlyOrders = range(420, 5200, rand);
+    const statusPool = ["new", "emerging", "high_potential", "established"] as const;
+    const status =
+      peopleStarted < 120 || availableCapacity > 70
+        ? "new"
+        : launchScore >= 92 && monthlyOrders >= 2500
+          ? "high_potential"
+          : peopleStarted >= 1200 && launchScore >= 85
+            ? "established"
+            : statusPool[i % 4];
+
     opportunities.push({
       id: `opp_${i + 1}`,
       name: generateBusinessName(i),
       country,
       category,
-      launchScore: range(78, 98, rand),
+      launchScore,
       crestPrice,
       recommendedSellingPrice: range(1299, 8999, rand) / 100,
-      monthlyOrders: range(420, 5200, rand),
+      monthlyOrders,
       minimumLaunchCost: crestPrice,
-      availableCapacity: range(12, 89, rand),
-      peopleStarted: range(48, 2840, rand),
+      availableCapacity,
+      peopleStarted,
+      status,
       image: getCategoryImage(category, `opp_${i + 1}`),
       description: `A premium ${category.toLowerCase()} brand optimized for the ${country} market with end-to-end CREST fulfillment.`,
       productsIncluded: selectedProducts,
@@ -172,15 +187,23 @@ export function generateUserBusinesses(count: number, products: Product[]): User
 export function generateOrders(count: number, businesses: UserBusiness[]): Order[] {
   const firstNames = ["Alex", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Quinn", "Avery", "Blake", "Cameron"];
   const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Wilson", "Moore"];
+  const domains = ["mail.com", "inbox.co", "email.net", "post.io", "box.app"];
   const orders: Order[] = [];
   for (let i = 0; i < count; i++) {
     const rand = seededRandom(i * 1237 + 900);
     const business = pick(businesses, rand);
+    const first = pick(firstNames, rand);
+    const last = pick(lastNames, rand);
+    const local = `${first.toLowerCase()}.${last.toLowerCase()}${range(1, 99, rand)}`;
+    const countryCode = pick(["1", "44", "91", "61", "49", "33", "971"], rand);
+    const phoneBody = String(range(2000000000, 9999999999, rand));
     orders.push({
       id: `ord_${i + 1}`,
       businessId: business.id,
       businessName: business.name,
-      customerName: `${pick(firstNames, rand)} ${pick(lastNames, rand)}`,
+      customerName: `${first} ${last}`,
+      customerEmail: `${local}@${pick(domains, rand)}`,
+      customerPhone: `+${countryCode}${phoneBody}`,
       amount: range(1500, 45000, rand),
       status: pick(["completed", "processing", "shipped"] as const, rand),
       country: business.country,
@@ -293,6 +316,7 @@ export function generateProfile(): UserProfile {
       pushNotifications: true,
       currency: "INR",
       language: "en",
+      theme: "dark",
     },
   };
 }

@@ -114,7 +114,7 @@ export default function OpportunitiesPage() {
       )}
 
       {!isLoading && opportunities.length === 0 && (
-        <div className="text-center py-20 text-white/40">No opportunities match your filters.</div>
+        <div className="text-center py-20 text-white/40">{t("opp.noResults")}</div>
       )}
 
       <LaunchBusinessDialog

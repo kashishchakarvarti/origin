@@ -47,7 +47,7 @@ export default function SignupPage() {
             </div>
           </Link>
           <h1 className="text-2xl font-semibold">Create your account</h1>
-          <p className="text-sm text-white/50">Start launching global businesses</p>
+          <p className="text-sm text-white/50">Create your CREST OS account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-white/[0.06] bg-card p-8">

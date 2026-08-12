@@ -6,7 +6,7 @@ import { normalizeAudienceTargeting } from "../audience-filters";
 import { DEMO_CREDENTIALS } from "../constants";
 import { createBusinessFromOpportunity, createCustomBusiness, generateSeedData } from "./generator";
 
-const STORAGE_KEY = "crest_os_data_v5";
+const STORAGE_KEY = "crest_os_data_v8";
 const AUTH_KEY = "crest_os_auth";
 const DEMO_KEY = "crest_os_demo";
 
